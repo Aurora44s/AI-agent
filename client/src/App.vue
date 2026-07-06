@@ -9,11 +9,44 @@ const isAdmin = computed(() => route.path.startsWith("/admin"));
 </script>
 
 <template>
-  <div class="flex flex-col min-h-screen">
+  <div class="flex flex-col min-h-screen bg-gray-50/80">
     <AppHeader v-if="!isAdmin" />
     <main class="flex-1">
-      <router-view />
+      <router-view v-slot="{ Component, route: r }">
+        <transition
+          :name="r.meta.transition || 'fade-slide'"
+          mode="out-in"
+        >
+          <component :is="Component" :key="r.path" />
+        </transition>
+      </router-view>
     </main>
     <AppFooter v-if="!isAdmin" />
   </div>
 </template>
+
+<style>
+/* ===== 页面过渡动画 ===== */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.25s ease;
+}
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-12px);
+}
+
+/* 快速淡入（文章详情页） */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

@@ -2,21 +2,113 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 文章内容样式 - 含响应式 */
-.prose h1 { @apply text-2xl md:text-3xl font-bold mt-6 md:mt-8 mb-3 md:mb-4; }
-.prose h2 { @apply text-xl md:text-2xl font-bold mt-5 md:mt-6 mb-2 md:mb-3 border-b pb-2; }
-.prose h3 { @apply text-lg md:text-xl font-semibold mt-4 mb-2; }
-.prose p { @apply my-3 md:my-4 leading-relaxed text-sm md:text-base; }
-.prose ul { @apply list-disc pl-5 md:pl-6 my-3 md:my-4 text-sm md:text-base; }
-.prose ol { @apply list-decimal pl-5 md:pl-6 my-3 md:my-4 text-sm md:text-base; }
-.prose li { @apply my-1; }
-.prose a { @apply text-blue-600 hover:text-blue-800 underline; }
-.prose blockquote { @apply border-l-4 border-gray-300 pl-3 md:pl-4 italic my-3 md:my-4 text-gray-600 text-sm md:text-base; }
-.prose pre { @apply bg-gray-900 text-gray-100 p-3 md:p-4 rounded-lg overflow-x-auto my-3 md:my-4 text-xs md:text-sm; }
-.prose code { @apply bg-gray-100 text-red-500 px-1.5 py-0.5 rounded text-xs md:text-sm; }
-.prose pre code { @apply bg-transparent text-gray-100 px-0 py-0; }
-.prose img { @apply max-w-full rounded-lg my-3 md:my-4; }
-.prose table { @apply w-full border-collapse my-3 md:my-4 text-xs md:text-sm; }
-.prose th { @apply border px-2 md:px-4 py-2 bg-gray-50 font-semibold text-left; }
-.prose td { @apply border px-2 md:px-4 py-2; }
-.prose hr { @apply my-6 md:my-8 border-gray-200; }
+/* ===== 全局基础样式 ===== */
+@layer base {
+  body {
+    @apply bg-gray-50/80 text-gray-700 antialiased;
+  }
+
+  ::selection {
+    @apply bg-primary-200 text-primary-900;
+  }
+
+  /* 自定义滚动条 */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-100;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full hover:bg-gray-400;
+  }
+}
+
+/* ===== 通用工具类 ===== */
+@layer components {
+  /* 渐变色文字 */
+  .text-gradient {
+    @apply bg-gradient-primary bg-clip-text text-transparent;
+  }
+
+  /* 卡片顶部渐变装饰条 */
+  .card-accent {
+    @apply relative overflow-hidden;
+  }
+  .card-accent::before {
+    content: "";
+    @apply absolute top-0 left-0 right-0 h-1 bg-gradient-primary;
+  }
+
+  /* 彩色标签基础样式 */
+  .tag-pill {
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-medium rounded-full transition-all duration-200;
+  }
+
+  /* 渐变按钮 */
+  .btn-gradient {
+    @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-primary rounded-lg
+           hover:shadow-glow transition-all duration-300;
+  }
+}
+
+/* ===== 文章内容排版 ===== */
+.prose h1 {
+  @apply text-2xl md:text-3xl font-bold mt-6 md:mt-8 mb-3 md:mb-4 text-gray-900;
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.prose h2 {
+  @apply text-xl md:text-2xl font-bold mt-5 md:mt-6 mb-2 md:mb-3 pb-2 border-b border-gray-200 text-gray-800;
+}
+.prose h3 {
+  @apply text-lg md:text-xl font-semibold mt-4 mb-2 text-gray-800;
+}
+.prose p {
+  @apply my-3 md:my-4 leading-relaxed text-sm md:text-base text-gray-600;
+}
+.prose ul {
+  @apply list-disc pl-5 md:pl-6 my-3 md:my-4 text-sm md:text-base text-gray-600;
+}
+.prose ol {
+  @apply list-decimal pl-5 md:pl-6 my-3 md:my-4 text-sm md:text-base text-gray-600;
+}
+.prose li {
+  @apply my-1;
+}
+.prose a {
+  @apply text-primary-600 hover:text-primary-700 underline decoration-primary-300 hover:decoration-primary-500 transition-colors;
+}
+.prose blockquote {
+  @apply border-l-4 border-primary-400 bg-primary-50/50 pl-3 md:pl-4 py-2 italic my-3 md:my-4 text-gray-600 text-sm md:text-base rounded-r-lg;
+}
+.prose pre {
+  @apply bg-gray-900 text-gray-100 p-3 md:p-4 rounded-xl overflow-x-auto my-3 md:my-4 text-xs md:text-sm border border-gray-800;
+}
+.prose code {
+  @apply bg-primary-50 text-primary-700 px-1.5 py-0.5 rounded text-xs md:text-sm font-medium;
+}
+.prose pre code {
+  @apply bg-transparent text-gray-100 px-0 py-0 font-normal;
+}
+.prose img {
+  @apply max-w-full rounded-xl my-3 md:my-4 shadow-md;
+}
+.prose table {
+  @apply w-full border-collapse my-3 md:my-4 text-xs md:text-sm rounded-lg overflow-hidden;
+}
+.prose th {
+  @apply border border-gray-200 px-2 md:px-4 py-2 bg-primary-50 font-semibold text-left text-primary-800;
+}
+.prose td {
+  @apply border border-gray-200 px-2 md:px-4 py-2;
+}
+.prose hr {
+  @apply my-6 md:my-8 border-gray-200;
+}
+.prose strong {
+  @apply text-gray-800 font-semibold;
+}

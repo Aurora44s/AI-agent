@@ -3,6 +3,8 @@ import { ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { fetchPosts, type Post } from "@/api";
 import PostCard from "@/components/blog/PostCard.vue";
+import SkeletonCard from "@/components/blog/SkeletonCard.vue";
+import RevealWrapper from "@/components/blog/RevealWrapper.vue";
 
 const route = useRoute();
 const postList = ref<Post[]>([]);
@@ -27,15 +29,26 @@ watch(() => route.params.slug, load);
 
 <template>
   <div class="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-6 md:py-8">
-    <h1 class="text-xl md:text-2xl font-bold text-gray-900 mb-1">
-      标签：{{ route.params.slug }}
-    </h1>
-    <p class="text-gray-500 text-sm mb-6 md:mb-8">共 {{ postList.length }} 篇文章</p>
-
-    <div v-if="loading" class="text-center py-12 text-gray-400">加载中...</div>
-    <div v-else-if="postList.length > 0" class="grid gap-4 md:gap-6">
-      <PostCard v-for="post in postList" :key="post.id" :post="post" />
+    <div class="mb-6 md:mb-8">
+      <h1 class="text-xl md:text-2xl font-bold text-gray-900 mb-1">
+        标签：<span class="text-gradient">{{ route.params.slug }}</span>
+      </h1>
+      <p class="text-gray-400 text-sm">共 {{ postList.length }} 篇文章</p>
     </div>
-    <div v-else class="text-center py-12 text-gray-400">该标签下暂无文章</div>
+
+    <!-- 骨架屏 -->
+    <div v-if="loading" class="grid gap-4 md:gap-6">
+      <SkeletonCard v-for="i in 2" :key="i" />
+    </div>
+
+    <div v-else-if="postList.length > 0" class="grid gap-4 md:gap-6">
+      <RevealWrapper v-for="(post, idx) in postList" :key="post.id" :delay="idx * 80">
+        <PostCard :post="post" />
+      </RevealWrapper>
+    </div>
+    <div v-else class="text-center py-16">
+      <div class="text-4xl mb-3">🏷️</div>
+      <p class="text-gray-400">该标签下暂无文章</p>
+    </div>
   </div>
 </template>
