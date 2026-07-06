@@ -23,7 +23,7 @@ const colorClasses = computed(() => {
 <template>
   <RouterLink
     :to="`/tag/${tag.slug}`"
-    :class="['tag-pill', colorClasses]"
+    :class="['inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-medium rounded-full transition-all duration-200', colorClasses]"
   >
     #{{ tag.name }}
   </RouterLink>
