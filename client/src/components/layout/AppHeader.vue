@@ -93,21 +93,33 @@ function tagColor(idx: number) {
       </button>
     </nav>
 
-    <!-- 移动端汉堡菜单 -->
+    <!-- 移动端遮罩 -->
     <transition name="slide-down">
-      <div v-if="menuOpen" class="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1">
-        <RouterLink to="/" class="block py-2 text-gray-600 font-medium" @click="menuOpen = false">
-          首页
-        </RouterLink>
-        <button
-          class="block w-full text-left py-2 text-gray-600 font-medium"
-          @click="menuOpen = false; tagsSidebarOpen = true"
+      <div
+        v-if="menuOpen"
+        class="md:hidden fixed inset-0 z-40"
+        @click="menuOpen = false"
+      >
+        <!-- 半透明背景 -->
+        <div class="absolute inset-0 bg-black/20"></div>
+        <!-- 菜单面板 -->
+        <div
+          class="absolute top-14 right-0 w-1/3 bg-white shadow-xl rounded-bl-2xl border-b border-l border-gray-100 px-3 py-3 space-y-1"
+          @click.stop
         >
-          标签
-        </button>
-        <RouterLink to="/about" class="block py-2 text-gray-600 font-medium" @click="menuOpen = false">
-          关于
-        </RouterLink>
+          <RouterLink to="/" class="block py-2 text-gray-600 font-medium" @click="menuOpen = false">
+            首页
+          </RouterLink>
+          <button
+            class="block w-full text-left py-2 text-gray-600 font-medium"
+            @click="menuOpen = false; tagsSidebarOpen = true"
+          >
+            标签
+          </button>
+          <RouterLink to="/about" class="block py-2 text-gray-600 font-medium" @click="menuOpen = false">
+            关于
+          </RouterLink>
+        </div>
       </div>
     </transition>
 
