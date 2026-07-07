@@ -1,11 +1,24 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { computed } from "vue";
+import { computed, watch, onUnmounted } from "vue";
 import AppHeader from "./components/layout/AppHeader.vue";
 import AppFooter from "./components/layout/AppFooter.vue";
+import { useClickParticles } from "@/composables/useClickParticles";
 
 const route = useRoute();
 const isAdmin = computed(() => route.path.startsWith("/admin"));
+
+// 前台页面启用点击粒子动画，管理后台禁用
+let particlesCleanup: (() => void) | null = null;
+watch(isAdmin, (admin) => {
+  if (!admin && !particlesCleanup) {
+    particlesCleanup = useClickParticles();
+  } else if (admin && particlesCleanup) {
+    particlesCleanup();
+    particlesCleanup = null;
+  }
+}, { immediate: true });
+onUnmounted(() => particlesCleanup?.());
 </script>
 
 <template>
