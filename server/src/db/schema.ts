@@ -37,3 +37,11 @@ export const settings = mysqlTable("settings", {
   key: varchar("key", { length: 100 }).primaryKey(),
   value: text("value").notNull(),
 });
+
+// 聊天消息表
+export const messages = mysqlTable("messages", {
+  id: int("id").autoincrement().primaryKey(),
+  nickname: varchar("nickname", { length: 50 }).notNull(),
+  content: text("content").notNull(),
+  createdAt: datetime("created_at").notNull(),
+});

@@ -3,6 +3,7 @@ import { useRoute } from "vue-router";
 import { computed, watch, onUnmounted } from "vue";
 import AppHeader from "./components/layout/AppHeader.vue";
 import AppFooter from "./components/layout/AppFooter.vue";
+import ChatWidget from "@/components/chat/ChatWidget.vue";
 import { useClickParticles } from "@/composables/useClickParticles";
 
 const route = useRoute();
@@ -35,6 +36,7 @@ onUnmounted(() => particlesCleanup?.());
       </router-view>
     </main>
     <AppFooter v-if="!isAdmin" />
+    <ChatWidget v-if="!isAdmin" />
   </div>
 </template>
 

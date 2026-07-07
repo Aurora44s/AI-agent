@@ -1,8 +1,10 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
+import http from "http";
 import dotenv from "dotenv";
 import { initDb } from "./db";
+import { initSocket } from "./socket";
 import postsRouter from "./routes/posts";
 import tagsRouter from "./routes/tags";
 import settingsRouter from "./routes/settings";
@@ -41,7 +43,11 @@ async function main() {
   // 错误处理
   app.use(errorHandler);
 
-  app.listen(PORT, () => {
+  // 创建 HTTP Server（Socket.IO 需要）
+  const server = http.createServer(app);
+  initSocket(server);
+
+  server.listen(PORT, () => {
     console.log(`🚀 服务器启动成功: http://localhost:${PORT}`);
   });
 }
