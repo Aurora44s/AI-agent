@@ -6,21 +6,29 @@ import AppFooter from "./components/layout/AppFooter.vue";
 import ChatWidget from "@/components/chat/ChatWidget.vue";
 import MusicPlayer from "@/components/music/MusicPlayer.vue";
 import { useClickParticles } from "@/composables/useClickParticles";
+import { useFallingParticles } from "@/composables/useFallingParticles";
 
 const route = useRoute();
 const isAdmin = computed(() => route.path.startsWith("/admin"));
 
-// 前台页面启用点击粒子动画，管理后台禁用
+// 前台页面启用粒子动画，管理后台禁用
 let particlesCleanup: (() => void) | null = null;
+let fallingCleanup: (() => void) | null = null;
 watch(isAdmin, (admin) => {
   if (!admin && !particlesCleanup) {
     particlesCleanup = useClickParticles();
+    fallingCleanup = useFallingParticles();
   } else if (admin && particlesCleanup) {
     particlesCleanup();
     particlesCleanup = null;
+    fallingCleanup?.();
+    fallingCleanup = null;
   }
 }, { immediate: true });
-onUnmounted(() => particlesCleanup?.());
+onUnmounted(() => {
+  particlesCleanup?.();
+  fallingCleanup?.();
+});
 
 // 聊天室和音乐播放器互斥
 const chatOpen = ref(false);
