@@ -66,8 +66,8 @@ function doSearch() {
         {{ siteDesc }}
       </p>
 
-      <!-- 搜索框 -->
-      <div class="flex gap-2 max-w-md mx-auto">
+      <!-- 搜索框（移动端隐藏，改用头部搜索图标） -->
+      <div class="hidden md:flex gap-2 max-w-md mx-auto">
         <input
           v-model="searchQuery"
           type="text"
