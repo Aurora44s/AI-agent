@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import { fetchPosts, type Post } from "@/api";
 import PostCard from "@/components/blog/PostCard.vue";
-import HeroSection from "@/components/blog/HeroSection.vue";
+import Carousel from "@/components/blog/Carousel.vue";
 import SkeletonCard from "@/components/blog/SkeletonCard.vue";
 import RevealWrapper from "@/components/blog/RevealWrapper.vue";
 
@@ -31,8 +31,8 @@ const totalPages = () => Math.ceil(total.value / 10);
 
 <template>
   <div>
-    <!-- Hero 区域 -->
-    <HeroSection />
+    <!-- 轮播图 -->
+    <Carousel />
 
     <!-- 文章列表 -->
     <div class="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-8 md:py-12">

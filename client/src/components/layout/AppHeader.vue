@@ -128,8 +128,17 @@ function tagColor(idx: number) {
         </RouterLink>
       </div>
 
-      <!-- 右侧占位（桌面端保持平衡） -->
-      <div class="hidden md:block w-16 shrink-0"></div>
+      <!-- 右侧：桌面端搜索 + 占位 -->
+      <div class="hidden md:flex items-center shrink-0">
+        <button
+          class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+          @click="searchOpen = true"
+        >
+          <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </button>
+      </div>
 
       <!-- 移动端菜单按钮 -->
       <button
@@ -173,30 +182,32 @@ function tagColor(idx: number) {
       </div>
     </transition>
 
-    <!-- 移动端搜索面板 -->
+    <!-- 搜索面板 -->
     <transition name="search-fade">
       <div
         v-if="searchOpen"
-        class="md:hidden fixed inset-0 z-50"
+        class="fixed inset-0 z-50"
       >
         <!-- 半透明遮罩 -->
         <div class="absolute inset-0 bg-black/30"></div>
         <!-- 搜索栏 -->
-        <div ref="searchPanelEl" class="relative z-10 bg-white shadow-lg rounded-b-2xl px-4 py-4 flex gap-2">
-          <input
-            ref="searchInputEl"
-            v-model="searchQuery"
-            type="text"
-            placeholder="搜索文章..."
-            class="flex-1 px-4 py-2.5 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
-            @keyup.enter="doSearch"
-          />
-          <button
-            @click="doSearch"
-            class="px-4 py-2.5 bg-gradient-primary text-white text-sm font-medium rounded-xl hover:shadow-glow transition-all duration-300 whitespace-nowrap"
-          >
-            搜索
-          </button>
+        <div ref="searchPanelEl" class="relative z-10 bg-white shadow-lg rounded-b-2xl px-4 py-4">
+          <div class="max-w-xl mx-auto flex gap-2">
+            <input
+              ref="searchInputEl"
+              v-model="searchQuery"
+              type="text"
+              placeholder="搜索文章..."
+              class="flex-1 px-4 py-2.5 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400"
+              @keyup.enter="doSearch"
+            />
+            <button
+              @click="doSearch"
+              class="px-4 py-2.5 bg-gradient-primary text-white text-sm font-medium rounded-xl hover:shadow-glow transition-all duration-300 whitespace-nowrap"
+            >
+              搜索
+            </button>
+          </div>
         </div>
       </div>
     </transition>
