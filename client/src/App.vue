@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { computed, watch, onUnmounted } from "vue";
+import { ref, computed, watch, onUnmounted } from "vue";
 import AppHeader from "./components/layout/AppHeader.vue";
 import AppFooter from "./components/layout/AppFooter.vue";
 import ChatWidget from "@/components/chat/ChatWidget.vue";
+import MusicPlayer from "@/components/music/MusicPlayer.vue";
 import { useClickParticles } from "@/composables/useClickParticles";
 
 const route = useRoute();
@@ -20,6 +21,20 @@ watch(isAdmin, (admin) => {
   }
 }, { immediate: true });
 onUnmounted(() => particlesCleanup?.());
+
+// 聊天室和音乐播放器互斥
+const chatOpen = ref(false);
+const musicOpen = ref(false);
+
+function onChatToggle(val: boolean) {
+  chatOpen.value = val;
+  if (val) musicOpen.value = false;
+}
+
+function onMusicToggle(val: boolean) {
+  musicOpen.value = val;
+  if (val) chatOpen.value = false;
+}
 </script>
 
 <template>
@@ -36,7 +51,8 @@ onUnmounted(() => particlesCleanup?.());
       </router-view>
     </main>
     <AppFooter v-if="!isAdmin" />
-    <ChatWidget v-if="!isAdmin" />
+    <ChatWidget v-if="!isAdmin" :model-value="chatOpen" @update:model-value="onChatToggle" />
+    <MusicPlayer v-if="!isAdmin" :model-value="musicOpen" @update:model-value="onMusicToggle" @close-chat="chatOpen = false" />
   </div>
 </template>
 

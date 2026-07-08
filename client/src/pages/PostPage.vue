@@ -54,7 +54,7 @@ onMounted(async () => {
   }
 });
 
-useSEO(computed(() => post.value));
+useSEO(() => post.value);
 </script>
 
 <template>

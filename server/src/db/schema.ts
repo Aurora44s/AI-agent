@@ -45,3 +45,14 @@ export const messages = mysqlTable("messages", {
   content: text("content").notNull(),
   createdAt: datetime("created_at").notNull(),
 });
+
+// 歌曲表
+export const songs = mysqlTable("songs", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  artist: varchar("artist", { length: 255 }).default(""),
+  filePath: varchar("file_path", { length: 500 }).notNull(),
+  coverPath: varchar("cover_path", { length: 500 }).default(""),
+  lrcContent: text("lrc_content"),
+  createdAt: datetime("created_at").notNull(),
+});

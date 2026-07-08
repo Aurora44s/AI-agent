@@ -10,7 +10,20 @@ interface ChatMessage {
   createdAt: string;
 }
 
+const props = defineProps<{ modelValue: boolean }>();
+const emit = defineEmits<{ "update:modelValue": [value: boolean] }>();
+
 const isOpen = ref(false);
+
+// 外部控制同步
+watch(() => props.modelValue, (val) => {
+  if (!val) isOpen.value = false;
+});
+
+function setOpen(val: boolean) {
+  isOpen.value = val;
+  emit("update:modelValue", val);
+}
 const nickname = ref("");
 const inputMsg = ref("");
 const messages = ref<ChatMessage[]>([]);
@@ -57,10 +70,10 @@ function disconnect() {
 // 展开/折叠
 function toggle() {
   if (!hasSetNickname.value) {
-    isOpen.value = true;
+    setOpen(true);
     return;
   }
-  isOpen.value = !isOpen.value;
+  setOpen(!isOpen.value);
 }
 
 // 设置昵称
@@ -128,7 +141,7 @@ onUnmounted(() => disconnect());
             <span class="font-bold text-sm">聊天室</span>
             <span class="text-xs text-white/70">· {{ onlineCount }} 人在线</span>
           </div>
-          <button class="p-1 rounded-lg hover:bg-white/20 transition-colors" @click="isOpen = false">
+          <button class="p-1 rounded-lg hover:bg-white/20 transition-colors" @click="setOpen(false)">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>

@@ -116,3 +116,25 @@ export const uploadImage = (file: File) => {
 
 export const updateSettings = (settings: Record<string, string>) =>
   api.put("/admin/settings", { settings });
+
+// ============ 歌曲 API ============
+
+export interface Song {
+  id: number;
+  title: string;
+  artist: string;
+  filePath: string;
+  coverPath: string;
+  lrcContent: string;
+  createdAt: string;
+}
+
+export const fetchSongs = () => api.get<Song[]>("/songs");
+
+export const uploadSong = (formData: FormData) =>
+  api.post<{ id: number; title: string; artist: string }>("/admin/songs/upload", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+export const deleteSong = (id: number) =>
+  api.delete(`/admin/songs/${id}`);

@@ -11,6 +11,7 @@ import settingsRouter from "./routes/settings";
 import authRouter from "./routes/auth";
 import uploadRouter from "./routes/upload";
 import adminRouter from "./routes/admin";
+import songsRouter from "./routes/songs";
 import { authMiddleware } from "./middleware/auth";
 import { errorHandler } from "./middleware/errorHandler";
 
@@ -35,10 +36,12 @@ async function main() {
   app.use("/api/tags", tagsRouter);
   app.use("/api/settings", settingsRouter);
   app.use("/api/auth", authRouter);
+  app.use("/api/songs", songsRouter);
 
   // 需要认证的后台 API
   app.use("/api/admin/upload", authMiddleware, uploadRouter);
   app.use("/api/admin", authMiddleware, adminRouter);
+  app.use("/api/admin/songs", songsRouter);
 
   // 错误处理
   app.use(errorHandler);
