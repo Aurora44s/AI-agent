@@ -138,3 +138,18 @@ export const uploadSong = (formData: FormData) =>
 
 export const deleteSong = (id: number) =>
   api.delete(`/admin/songs/${id}`);
+
+// ============ 留言 API ============
+
+export interface Comment {
+  id: number;
+  nickname: string;
+  email: string;
+  content: string;
+  createdAt: string;
+}
+
+export const fetchComments = () => api.get<Comment[]>("/comments");
+
+export const createComment = (data: { nickname: string; email: string; content: string }) =>
+  api.post<{ success: boolean }>("/comments", data);

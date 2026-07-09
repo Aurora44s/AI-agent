@@ -46,6 +46,15 @@ export const messages = mysqlTable("messages", {
   createdAt: datetime("created_at").notNull(),
 });
 
+// 留言表
+export const comments = mysqlTable("comments", {
+  id: int("id").autoincrement().primaryKey(),
+  nickname: varchar("nickname", { length: 50 }).notNull(),
+  email: varchar("email", { length: 200 }).notNull().default(""),
+  content: text("content").notNull(),
+  createdAt: datetime("created_at").notNull(),
+});
+
 // 歌曲表
 export const songs = mysqlTable("songs", {
   id: int("id").autoincrement().primaryKey(),

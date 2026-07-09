@@ -66,7 +66,7 @@ onUnmounted(stopAutoPlay);
 </script>
 
 <template>
-  <section class="relative overflow-hidden h-[90vh] md:h-screen">
+  <section class="relative overflow-hidden h-[80vh] md:h-screen">
     <!-- 背景装饰 -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
       <div class="absolute -top-20 -left-20 w-72 h-72 bg-primary-200/30 rounded-full blur-3xl animate-float" style="animation-delay: 0s"></div>
@@ -145,6 +145,13 @@ onUnmounted(stopAutoPlay);
         ]"
         @click="goTo(idx); stopAutoPlay(); startAutoPlay()"
       ></button>
+    </div>
+
+    <!-- 下滑提示箭头（仅移动端） -->
+    <div class="md:hidden absolute bottom-14 left-1/2 -translate-x-1/2 z-10 animate-bounce">
+      <svg class="w-6 h-6 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+      </svg>
     </div>
 
     <!-- 底部波浪 -->
