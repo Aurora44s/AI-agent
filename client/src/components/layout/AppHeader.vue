@@ -6,6 +6,7 @@ import MobileTagSidebar from "@/components/blog/MobileTagSidebar.vue";
 
 const router = useRouter();
 const siteName = ref("个人博客");
+const siteDesc = ref("分享技术与生活的点滴");
 const tagList = ref<Tag[]>([]);
 const menuOpen = ref(false);
 const tagsSidebarOpen = ref(false);
@@ -52,9 +53,8 @@ onUnmounted(() => {
 onMounted(async () => {
   try {
     const settingsRes = await fetchSettings();
-    if (settingsRes.data.site_name) {
-      siteName.value = settingsRes.data.site_name;
-    }
+    if (settingsRes.data.site_name) siteName.value = settingsRes.data.site_name;
+    if (settingsRes.data.site_description) siteDesc.value = settingsRes.data.site_description;
   } catch {}
 
   try {
@@ -62,6 +62,13 @@ onMounted(async () => {
     tagList.value = tagsRes.data;
   } catch {}
 });
+
+// 移动端菜单项
+const menuItems = [
+  { label: "首页", to: "/" },
+  { label: "文章", to: "/" },
+  { label: "关于", to: "/about" },
+];
 
 // 标签颜色轮换
 function tagColor(idx: number) {
@@ -152,35 +159,54 @@ function tagColor(idx: number) {
       </button>
     </nav>
 
-    <!-- 移动端遮罩 -->
-    <transition name="slide-down">
-      <div
-        v-if="menuOpen"
-        class="md:hidden fixed inset-0 z-40"
-        @click="menuOpen = false"
-      >
-        <!-- 半透明背景 -->
-        <div class="absolute inset-0 bg-black/20"></div>
-        <!-- 菜单面板 -->
+    <!-- 移动端菜单（Teleport 到 body 避免 backdrop-filter 裁剪） -->
+    <Teleport to="body">
+      <!-- 遮罩 -->
+      <transition name="menu-mask">
         <div
-          class="absolute top-14 right-0 w-1/3 bg-white shadow-xl rounded-bl-2xl border-b border-l border-gray-100 px-3 py-3 space-y-1"
+          v-if="menuOpen"
+          class="md:hidden fixed inset-0 z-50 bg-black/30"
+          @click="menuOpen = false"
+        ></div>
+      </transition>
+      <!-- 抽屉面板 -->
+      <transition name="menu-slide">
+        <div
+          v-if="menuOpen"
+          class="md:hidden fixed top-0 right-0 h-screen w-1/2 z-50 bg-white shadow-2xl flex flex-col"
           @click.stop
         >
-          <RouterLink to="/" class="block py-2 text-gray-600 font-medium" @click="menuOpen = false">
-            首页
-          </RouterLink>
-          <button
-            class="block w-full text-left py-2 text-gray-600 font-medium"
-            @click="menuOpen = false; tagsSidebarOpen = true"
-          >
-            标签
-          </button>
-          <RouterLink to="/about" class="block py-2 text-gray-600 font-medium" @click="menuOpen = false">
-            关于
-          </RouterLink>
+          <!-- Logo 区 -->
+          <div class="px-4 py-5 text-center">
+            <!-- 头像 -->
+            <RouterLink to="/" @click="menuOpen = false">
+              <div class="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-primary-400 to-purple-500 flex items-center justify-center shadow-md mb-4">
+                <span class="text-2xl text-white font-bold">{{ siteName.charAt(0) }}</span>
+              </div>
+            </RouterLink>
+            <!-- 博客名 -->
+            <RouterLink to="/" class="text-base font-bold text-gray-800" @click="menuOpen = false">
+              {{ siteName }}
+            </RouterLink>
+            <!-- 标语 -->
+            <p class="text-xs text-gray-400 mt-1.5">{{ siteDesc }}</p>
+          </div>
+          <!-- 菜单项 -->
+          <div class="flex-1 flex flex-col items-center justify-center px-4 space-y-4">
+            <RouterLink
+              v-for="(item, idx) in menuItems"
+              :key="item.label"
+              :to="item.to"
+              class="block py-3 text-lg text-gray-700 font-semibold tracking-wide"
+              :style="{ animation: `menuItemIn 0.4s ease-out ${idx * 0.1 + 0.1}s both` }"
+              @click="menuOpen = false"
+            >
+              {{ item.label }}
+            </RouterLink>
+          </div>
         </div>
-      </div>
-    </transition>
+      </transition>
+    </Teleport>
 
     <!-- 搜索面板 -->
     <transition name="search-fade">
@@ -217,17 +243,27 @@ function tagColor(idx: number) {
   </header>
 </template>
 
-<style scoped>
-.slide-down-enter-active,
-.slide-down-leave-active {
-  transition: all 0.2s ease;
-}
-.slide-down-enter-from,
-.slide-down-leave-to {
-  opacity: 0;
-  transform: translateY(-8px);
+<style>
+/* ===== 全局样式（Teleport 到 body 的元素需要非 scoped） ===== */
+.menu-mask-enter-active { transition: opacity 0.3s ease-out; }
+.menu-mask-leave-active { transition: opacity 0.25s ease-in; }
+.menu-mask-enter-from,
+.menu-mask-leave-to { opacity: 0; }
+
+.menu-slide-enter-active { transition: transform 0.3s ease-out; }
+.menu-slide-leave-active { transition: transform 0.25s ease-in; }
+.menu-slide-enter-from,
+.menu-slide-leave-to {
+  transform: translateX(100%);
 }
 
+@keyframes menuItemIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<style scoped>
 /* 搜索面板过渡 */
 .search-fade-enter-active,
 .search-fade-leave-active {
