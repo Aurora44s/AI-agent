@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import { fetchPosts, type Post } from "@/api";
 import PostCard from "@/components/blog/PostCard.vue";
 import Carousel from "@/components/blog/Carousel.vue";
@@ -24,17 +24,55 @@ async function loadPosts() {
   }
 }
 
-onMounted(loadPosts);
+// 滚动驱动力画
+const carouselWrapper = ref<HTMLDivElement | null>(null);
+const scrollY = ref(0);
+
+function onScroll() {
+  scrollY.value = window.scrollY;
+}
+
+const carouselStyle = computed(() => {
+  const h = carouselWrapper.value?.offsetHeight || window.innerHeight;
+  const p = Math.min(scrollY.value / h, 1);
+  return {
+    opacity: 1 - p,
+    transform: `scale(${1 - p * 0.05})`,
+  };
+});
+
+const articleStyle = computed(() => {
+  const h = carouselWrapper.value?.offsetHeight || window.innerHeight;
+  const p = Math.min(scrollY.value / h, 1);
+  return {
+    opacity: p,
+    transform: `translateY(${(1 - p) * 80}px)`,
+  };
+});
+
+onMounted(() => {
+  loadPosts();
+  window.addEventListener("scroll", onScroll, { passive: true });
+});
+onUnmounted(() => {
+  window.removeEventListener("scroll", onScroll);
+});
 
 const totalPages = () => Math.ceil(total.value / 10);
 </script>
 
 <template>
   <div>
-    <!-- 轮播图 -->
-    <Carousel />
+    <!-- 轮播图（滚动淡出） -->
+    <div ref="carouselWrapper" :style="{ ...carouselStyle, willChange: 'transform, opacity' }">
+      <Carousel />
+    </div>
 
-    <!-- 文章列表 -->
+    <!-- 文章列表（滚动上滑浮现） -->
+    <div
+      :style="{ ...articleStyle, willChange: 'transform, opacity' }"
+      class="relative bg-gray-50/80"
+    >
     <div class="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-8 md:py-12">
       <!-- 区域标题 -->
       <div class="flex items-center gap-3 mb-6 md:mb-8">
@@ -78,5 +116,6 @@ const totalPages = () => Math.ceil(total.value / 10);
         </button>
       </div>
     </div>
+    </div><!-- /文章动画容器 -->
   </div>
 </template>

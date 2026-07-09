@@ -66,7 +66,7 @@ onUnmounted(stopAutoPlay);
 </script>
 
 <template>
-  <section class="relative overflow-hidden h-72 md:h-[30rem]">
+  <section class="relative overflow-hidden h-[90vh] md:h-screen">
     <!-- 背景装饰 -->
     <div class="absolute inset-0 overflow-hidden pointer-events-none">
       <div class="absolute -top-20 -left-20 w-72 h-72 bg-primary-200/30 rounded-full blur-3xl animate-float" style="animation-delay: 0s"></div>

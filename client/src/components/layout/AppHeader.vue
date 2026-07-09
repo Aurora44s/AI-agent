@@ -86,7 +86,7 @@ function tagColor(idx: number) {
 </script>
 
 <template>
-  <header class="bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-100 sticky top-0 z-40">
+  <header class="fixed top-0 left-0 right-0 bg-transparent backdrop-blur-lg shadow-sm border-b border-white/20 z-40">
     <nav class="max-w-5xl mx-auto px-3 sm:px-4 lg:px-6 h-14 flex items-center justify-between gap-4 relative">
       <!-- 移动端搜索图标 -->
       <button
