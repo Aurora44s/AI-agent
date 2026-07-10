@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { fetchSettings, updateSettings, createTag, deleteTag, fetchTags, fetchSongs, uploadSong, deleteSong, type Tag, type Song } from "@/api";
+import { fetchSettings, updateSettings, createTag, deleteTag, fetchTags, fetchSongs, uploadSong, deleteSong, fetchComments, deleteComment, type Tag, type Song, type Comment } from "@/api";
 import AdminSidebar from "@/components/admin/AdminSidebar.vue";
 
 const siteName = ref("");
@@ -28,6 +28,7 @@ onMounted(async () => {
   } catch {}
 
   loadSongs();
+  loadComments();
 });
 
 async function save() {
@@ -115,6 +116,26 @@ async function removeSong(id: number) {
   try {
     await deleteSong(id);
     songList.value = songList.value.filter((s) => s.id !== id);
+  } catch {
+    alert("删除失败");
+  }
+}
+
+// ----- 留言管理 -----
+const commentList = ref<Comment[]>([]);
+
+async function loadComments() {
+  try {
+    const res = await fetchComments();
+    commentList.value = res.data;
+  } catch {}
+}
+
+async function removeComment(id: number) {
+  if (!confirm("确定删除此留言？")) return;
+  try {
+    await deleteComment(id);
+    commentList.value = commentList.value.filter((c) => c.id !== id);
   } catch {
     alert("删除失败");
   }
@@ -231,6 +252,29 @@ function onFileChange(e: Event, target: "file" | "cover") {
           </div>
         </div>
         <div v-else class="text-gray-400 text-sm pt-2">暂无歌曲，请上传</div>
+      </div>
+
+      <!-- 留言管理 -->
+      <h2 class="text-lg lg:text-xl font-bold text-gray-900 mt-8 mb-4">留言管理</h2>
+      <div class="bg-white rounded-lg shadow-sm border p-4 lg:p-6 max-w-2xl">
+        <div v-if="commentList.length > 0" class="space-y-2">
+          <div
+            v-for="comment in commentList"
+            :key="comment.id"
+            class="flex items-start justify-between py-3 px-3 bg-gray-50 rounded-lg"
+          >
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-sm font-semibold text-gray-800">{{ comment.nickname }}</span>
+                <span v-if="comment.email" class="text-xs text-gray-400">({{ comment.email }})</span>
+                <span class="text-xs text-gray-300 ml-auto">{{ comment.createdAt?.slice(0, 16).replace("T", " ") }}</span>
+              </div>
+              <p class="text-sm text-gray-600">{{ comment.content }}</p>
+            </div>
+            <button @click="removeComment(comment.id)" class="text-red-400 hover:text-red-600 text-xs px-2 py-1 shrink-0 ml-2">删除</button>
+          </div>
+        </div>
+        <div v-else class="text-gray-400 text-sm">暂无留言</div>
       </div>
     </div>
   </div>

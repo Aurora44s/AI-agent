@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { db } from "../db";
 import { comments } from "../db/schema";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
+import { authMiddleware } from "../middleware/auth";
 
 const router = Router();
 
@@ -31,6 +32,17 @@ router.post("/", async (req, res, next) => {
       createdAt: new Date(),
     });
 
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// DELETE /api/admin/comments/:id — 删除留言（需认证）
+router.delete("/:id", authMiddleware, async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    await db.delete(comments).where(eq(comments.id, id));
     res.json({ success: true });
   } catch (err) {
     next(err);

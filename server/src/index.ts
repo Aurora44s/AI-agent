@@ -39,6 +39,7 @@ async function main() {
   app.use("/api/auth", authRouter);
   app.use("/api/songs", songsRouter);
 app.use("/api/comments", commentsRouter);
+app.use("/api/admin/comments", commentsRouter);
 
   // 需要认证的后台 API
   app.use("/api/admin/upload", authMiddleware, uploadRouter);

@@ -153,3 +153,6 @@ export const fetchComments = () => api.get<Comment[]>("/comments");
 
 export const createComment = (data: { nickname: string; email: string; content: string }) =>
   api.post<{ success: boolean }>("/comments", data);
+
+export const deleteComment = (id: number) =>
+  api.delete(`/admin/comments/${id}`);
