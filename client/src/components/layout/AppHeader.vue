@@ -188,7 +188,7 @@ function tagColor(idx: number) {
               {{ siteName }}
             </RouterLink>
             <!-- 标语 -->
-            <p class="text-xs text-gray-400 mt-1.5">{{ siteDesc }}</p>
+            <p class="text-sm text-primary-500 font-semibold mt-2">{{ siteDesc }}</p>
           </div>
           <!-- 菜单项 -->
           <div class="flex-1 flex flex-col items-center justify-center px-4 space-y-4">

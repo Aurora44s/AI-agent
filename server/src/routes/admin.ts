@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { db } from "../db";
 import { posts, tags, postTags, settings } from "../db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 
 const router = Router();
 
@@ -77,6 +77,29 @@ router.post("/", async (req: Request, res: Response) => {
       return;
     }
     res.status(500).json({ error: "创建文章失败" });
+  }
+});
+
+// 更新站点设置（必须在 PUT /:id 之前，否则 /settings 会被 :id 匹配）
+router.put("/settings", async (req: Request, res: Response) => {
+  try {
+    const { settings: newSettings } = req.body;
+    if (!newSettings || typeof newSettings !== "object") {
+      res.status(400).json({ error: "设置数据格式错误" });
+      return;
+    }
+
+    for (const [k, v] of Object.entries(newSettings)) {
+      await db.execute(sql`
+        INSERT INTO settings (\`key\`, value) VALUES (${k}, ${String(v)})
+        ON DUPLICATE KEY UPDATE value = VALUES(value)
+      `);
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("更新设置失败:", err);
+    res.status(500).json({ error: "更新设置失败" });
   }
 });
 
@@ -171,29 +194,6 @@ router.delete("/tags/:id", async (req: Request, res: Response) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "删除标签失败" });
-  }
-});
-
-// 更新站点设置
-router.put("/settings", async (req: Request, res: Response) => {
-  try {
-    const { settings: newSettings } = req.body;
-    if (!newSettings || typeof newSettings !== "object") {
-      res.status(400).json({ error: "设置数据格式错误" });
-      return;
-    }
-
-    for (const [key, value] of Object.entries(newSettings)) {
-      await db
-        .insert(settings)
-        .values({ key, value: String(value) })
-        .onDuplicateKeyUpdate({ set: { value: String(value) } });
-    }
-
-    res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "更新设置失败" });
   }
 });
 

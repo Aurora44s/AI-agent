@@ -286,25 +286,27 @@ function fmtTime(t: number) {
       ref="panelEl"
       v-if="panelVisible"
       :class="[
-        'fixed z-50 left-4 bottom-28 w-80 md:w-96 rounded-2xl shadow-2xl border border-white/30 flex flex-col overflow-hidden transition-all duration-400',
+        'fixed z-50 left-4 bottom-28 w-80 md:w-96 rounded-2xl shadow-2xl border border-white/30 flex flex-col transition-all duration-400',
         expanded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4',
       ]"
       style="height: 420px;"
     >
-      <!-- 封面模糊背景 -->
-      <div
-        v-if="currentSong?.coverPath"
-        class="absolute inset-0 z-0"
-        :style="{
-          backgroundImage: `url(${currentSong.coverPath})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          filter: 'blur(40px)',
-          transform: 'scale(1.2)',
-        }"
-      ></div>
-      <!-- 半透明遮罩 -->
-      <div class="absolute inset-0 z-[1]" style="background: rgba(255,255,255,0.55);"></div>
+      <!-- 封面模糊背景（overflow-hidden 保持圆角） -->
+      <div class="absolute inset-0 z-0 rounded-2xl overflow-hidden">
+        <div
+          v-if="currentSong?.coverPath"
+          class="absolute inset-0"
+          :style="{
+            backgroundImage: `url(${currentSong.coverPath})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'blur(40px)',
+            transform: 'scale(1.2)',
+          }"
+        ></div>
+        <!-- 半透明遮罩 -->
+        <div class="absolute inset-0" style="background: rgba(255,255,255,0.55);"></div>
+      </div>
 
       <!-- 内容 -->
       <div class="relative z-10 flex flex-col h-full" style="backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);">
