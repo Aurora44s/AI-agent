@@ -38,7 +38,7 @@ const totalPages = () => Math.ceil(total.value / 10);
     </div>
 
     <!-- 文章列表（上滑覆盖轮播图） -->
-    <div class="relative z-10 -mt-12 md:-mt-20 bg-gray-50/80 rounded-t-3xl">
+    <div class="relative z-10 -mt-12 md:-mt-20 bg-gray-50/60 backdrop-blur-xl rounded-t-3xl">
     <div class="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 pt-8 md:pt-12 pb-8 md:pb-12">
       <!-- 区域标题 -->
       <div class="flex items-center gap-3 mb-6 md:mb-8">

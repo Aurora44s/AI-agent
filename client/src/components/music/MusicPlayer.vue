@@ -20,6 +20,13 @@ const currentLyricIdx = ref(-1);
 const audioEl = ref<HTMLAudioElement | null>(null);
 const lyricsContainer = ref<HTMLDivElement | null>(null);
 const panelEl = ref<HTMLDivElement | null>(null);
+const playlistBtnEl = ref<HTMLButtonElement | null>(null);
+
+const playlistPos = computed(() => {
+  if (!playlistBtnEl.value) return {};
+  const rect = playlistBtnEl.value.getBoundingClientRect();
+  return { top: rect.top - 8 + "px", right: window.innerWidth - rect.right + "px" };
+});
 
 // ----- 计算 -----
 const currentSong = computed(() => songList.value[currentIdx.value] ?? null);
@@ -27,8 +34,9 @@ const progress = computed(() => (duration.value > 0 ? (currentTime.value / durat
 
 // ----- 自动播放：首次用户交互后即播 -----
 let autoplayDone = false;
+let userPaused = false;
 function tryAutoplay() {
-  if (autoplayDone || !currentSong.value) return;
+  if (autoplayDone || userPaused || !currentSong.value) return;
   autoplayDone = true;
   document.removeEventListener("click", tryAutoplay);
   play();
@@ -136,6 +144,7 @@ async function play() {
   }
 }
 function pause() {
+  userPaused = true;
   audioEl.value?.pause();
   isPlaying.value = false;
 }
@@ -286,13 +295,13 @@ function fmtTime(t: number) {
       ref="panelEl"
       v-if="panelVisible"
       :class="[
-        'fixed z-50 left-4 bottom-28 w-80 md:w-96 rounded-2xl shadow-2xl border border-white/30 flex flex-col transition-all duration-400',
+        'fixed z-50 left-4 bottom-28 w-80 md:w-96 rounded-3xl shadow-2xl border border-white/50 flex flex-col overflow-hidden transition-all duration-400',
         expanded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4',
       ]"
       style="height: 420px;"
     >
       <!-- 封面模糊背景（overflow-hidden 保持圆角） -->
-      <div class="absolute inset-0 z-0 rounded-2xl overflow-hidden">
+      <div class="absolute inset-0 z-0 rounded-3xl overflow-hidden">
         <div
           v-if="currentSong?.coverPath"
           class="absolute inset-0"
@@ -332,25 +341,37 @@ function fmtTime(t: number) {
 
         <!-- 歌单按钮 -->
         <div class="relative">
-          <button class="p-1.5 rounded-lg hover:bg-white/40 transition-colors" @click="showPlaylist = !showPlaylist">
+          <button ref="playlistBtnEl" class="p-1.5 rounded-lg hover:bg-white/40 transition-colors" @click="showPlaylist = !showPlaylist">
             <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
             </svg>
           </button>
-          <div
-            v-if="showPlaylist"
-            class="absolute bottom-full right-0 mb-2 w-48 bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-100 py-1 max-h-48 overflow-y-auto"
-          >
-            <div v-if="!songList.length" class="px-3 py-2 text-xs text-gray-400">暂无歌曲</div>
-            <button
-              v-for="(song, idx) in songList"
-              :key="song.id"
-              :class="['w-full text-left px-3 py-1.5 text-xs truncate hover:bg-gray-50 transition-colors', idx === currentIdx ? 'text-primary-600 font-bold' : 'text-gray-600']"
-              @click="selectSong(idx)"
+          <Teleport to="body">
+            <div
+              v-if="showPlaylist"
+              :style="{ top: playlistPos.top, right: playlistPos.right }"
+              class="fixed z-[60] w-52 bg-white/60 backdrop-blur-xl rounded-xl shadow-xl border border-white/40 py-1 max-h-56 overflow-y-auto"
             >
-              {{ song.title }} - {{ song.artist }}
-            </button>
-          </div>
+              <!-- 关闭按钮 -->
+              <div class="flex items-center justify-between px-3 py-1.5 border-b border-white/30">
+                <span class="text-xs font-semibold text-gray-500">歌单</span>
+                <button class="p-0.5 rounded hover:bg-white/50 transition-colors" @click="showPlaylist = false">
+                  <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div v-if="!songList.length" class="px-3 py-2 text-xs text-gray-400">暂无歌曲</div>
+              <button
+                v-for="(song, idx) in songList"
+                :key="song.id"
+                :class="['w-full text-left px-3 py-1.5 text-xs truncate hover:bg-white/40 transition-colors', idx === currentIdx ? 'text-primary-600 font-bold' : 'text-gray-800']"
+                @click="selectSong(idx)"
+              >
+                {{ song.title }} - {{ song.artist }}
+              </button>
+            </div>
+          </Teleport>
         </div>
 
         <!-- 关闭 -->

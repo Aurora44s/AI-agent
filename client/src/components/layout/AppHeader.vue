@@ -174,7 +174,7 @@ function tagColor(idx: number) {
       <transition name="menu-slide">
         <div
           v-if="menuOpen"
-          class="md:hidden fixed top-0 right-0 h-screen w-1/2 z-50 bg-white shadow-2xl flex flex-col"
+          class="md:hidden fixed top-0 right-0 h-screen w-1/2 z-50 bg-white/40 backdrop-blur-2xl shadow-2xl flex flex-col"
           @click.stop
         >
           <!-- Logo 区 -->

@@ -8,7 +8,7 @@ defineProps<{ post: PostType }>();
 
 <template>
   <article
-    class="card-accent group bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6
+    class="card-accent group bg-white rounded-2xl shadow-md border border-gray-100 p-4 md:p-6
            hover:shadow-glow hover:border-primary-200 hover:-translate-y-1
            transition-all duration-300 ease-out"
   >

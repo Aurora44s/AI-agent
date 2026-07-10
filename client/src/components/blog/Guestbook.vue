@@ -63,7 +63,7 @@ onMounted(loadComments);
     </div>
 
     <!-- 提交表单 -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 mb-6">
+    <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-4 md:p-6 mb-6">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
         <input
           ref="nicknameEl"
@@ -112,7 +112,7 @@ onMounted(loadComments);
       <div
         v-for="comment in comments"
         :key="comment.id"
-        class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow duration-200"
+        class="bg-white rounded-2xl shadow-md border border-gray-100 p-4 hover:shadow-lg transition-shadow duration-200"
       >
         <div class="flex items-center gap-2 mb-2">
           <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
