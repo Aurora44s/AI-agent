@@ -3,9 +3,10 @@ import { ref, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import { fetchTags, fetchSettings, type Tag } from "@/api";
 import MobileTagSidebar from "@/components/blog/MobileTagSidebar.vue";
+import { HomeIcon, BookOpenIcon, InformationCircleIcon } from "@heroicons/vue/20/solid";
 
 const router = useRouter();
-const siteName = ref("个人博客");
+const siteName = ref("遇梦");
 const siteDesc = ref("分享技术与生活的点滴");
 const tagList = ref<Tag[]>([]);
 const menuOpen = ref(false);
@@ -65,9 +66,9 @@ onMounted(async () => {
 
 // 移动端菜单项
 const menuItems = [
-  { label: "首页", to: "/" },
-  { label: "文章", to: "/" },
-  { label: "关于", to: "/about" },
+  { label: "首页", to: "/", icon: HomeIcon },
+  { label: "文章", to: "/", icon: BookOpenIcon },
+  { label: "关于", to: "/about", icon: InformationCircleIcon },
 ];
 
 // 标签颜色轮换
@@ -178,11 +179,9 @@ function tagColor(idx: number) {
         >
           <!-- Logo 区 -->
           <div class="px-4 py-5 text-center">
-            <!-- 头像 -->
+            <!-- Logo 图片 -->
             <RouterLink to="/" @click="menuOpen = false">
-              <div class="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-primary-400 to-purple-500 flex items-center justify-center shadow-md mb-4">
-                <span class="text-2xl text-white font-bold">{{ siteName.charAt(0) }}</span>
-              </div>
+              <img src="/favicon.svg" :alt="siteName" class="w-16 h-16 mx-auto rounded-full shadow-md mb-4 object-cover" />
             </RouterLink>
             <!-- 博客名 -->
             <RouterLink to="/" class="text-base font-bold text-gray-800" @click="menuOpen = false">
@@ -197,11 +196,12 @@ function tagColor(idx: number) {
               v-for="(item, idx) in menuItems"
               :key="item.label"
               :to="item.to"
-              class="block py-3 text-lg text-gray-700 font-semibold tracking-wide"
+              class="flex items-center gap-2.5 py-3 text-lg text-primary-600 font-semibold tracking-wide"
               :style="{ animation: `menuItemIn 0.4s ease-out ${idx * 0.1 + 0.1}s both` }"
               @click="menuOpen = false"
             >
-              {{ item.label }}
+              <component :is="item.icon" class="w-5 h-5 text-primary-500 shrink-0" />
+              <span>{{ item.label }}</span>
             </RouterLink>
           </div>
         </div>

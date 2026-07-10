@@ -15,7 +15,7 @@ onMounted(async () => {
     const res = await fetchSettings();
     aboutContent.value = res.data.about_me || "暂无介绍";
     github.value = res.data.github || "";
-    siteName.value = res.data.site_name || "个人博客";
+    siteName.value = res.data.site_name || "遇梦";
   } catch {
     console.error("加载关于页面失败");
   } finally {

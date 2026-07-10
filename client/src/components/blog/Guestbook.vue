@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { fetchComments, createComment, type Comment } from "@/api";
+import { CloudArrowUpIcon } from "@heroicons/vue/20/solid";
 
 const comments = ref<Comment[]>([]);
 const loading = ref(true);
@@ -90,10 +91,11 @@ onMounted(loadComments);
       <div v-if="error" class="text-xs text-rose-500 mb-2">{{ error }}</div>
       <button
         :disabled="submitting"
-        class="px-5 py-2.5 bg-gradient-primary text-white text-sm font-medium rounded-xl hover:shadow-glow transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-primary text-white text-sm font-medium rounded-xl hover:shadow-glow transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
         @click="submit"
       >
-        {{ submitting ? "提交中..." : "提交留言" }}
+        <CloudArrowUpIcon class="w-4 h-4" />
+        <span>{{ submitting ? "提交中..." : "提交留言" }}</span>
       </button>
     </div>
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { io, Socket } from "socket.io-client";
+import { ChatBubbleLeftIcon } from "@heroicons/vue/20/solid";
 
 const STORAGE_KEY = "chat_nickname";
 
@@ -137,7 +138,7 @@ onUnmounted(() => disconnect());
         <!-- 头部 -->
         <div class="flex items-center justify-between px-4 py-3 bg-gradient-primary text-white shrink-0">
           <div class="flex items-center gap-2">
-            <span class="text-lg">💬</span>
+            <ChatBubbleLeftIcon class="w-5 h-5" />
             <span class="font-bold text-sm">聊天室</span>
             <span class="text-xs text-white/70">· {{ onlineCount }} 人在线</span>
           </div>
@@ -222,7 +223,7 @@ onUnmounted(() => disconnect());
       @click="toggle"
     >
       <span v-if="isOpen" class="text-xl">✕</span>
-      <span v-else class="text-2xl">💬</span>
+      <ChatBubbleLeftIcon v-else class="w-5 h-5" />
       <!-- 在线人数角标 -->
       <span
         v-if="!isOpen && onlineCount > 0"

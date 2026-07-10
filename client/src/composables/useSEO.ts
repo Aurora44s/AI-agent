@@ -4,12 +4,12 @@ import { fetchSettings, type Post } from "@/api";
 
 export function useSEO(post?: () => Post | null) {
   const route = useRoute();
-  let siteName = "个人博客";
+  let siteName = "遇梦";
 
   onMounted(async () => {
     try {
       const res = await fetchSettings();
-      siteName = res.data.site_name || "个人博客";
+      siteName = res.data.site_name || "遇梦";
       updateTitle();
     } catch {}
   });

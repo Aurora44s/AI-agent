@@ -11,7 +11,7 @@ interface Slide {
 
 const slides: Slide[] = [
   {
-    title: "欢迎来到个人博客",
+    title: "欢迎来到遇梦",
     subtitle: "分享技术与生活的点滴",
     gradient: "from-primary-500 via-purple-500 to-pink-500",
     emoji: "🚀",
