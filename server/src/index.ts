@@ -13,6 +13,7 @@ import uploadRouter from "./routes/upload";
 import adminRouter from "./routes/admin";
 import songsRouter from "./routes/songs";
 import commentsRouter from "./routes/comments";
+import photosRouter from "./routes/photos";
 import { authMiddleware } from "./middleware/auth";
 import { errorHandler } from "./middleware/errorHandler";
 
@@ -40,6 +41,8 @@ async function main() {
   app.use("/api/songs", songsRouter);
 app.use("/api/comments", commentsRouter);
 app.use("/api/admin/comments", commentsRouter);
+app.use("/api/photos", photosRouter);
+app.use("/api/admin/photos", photosRouter);
 
   // 需要认证的后台 API
   app.use("/api/admin/upload", authMiddleware, uploadRouter);

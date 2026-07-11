@@ -28,6 +28,11 @@ const router = createRouter({
       name: "about",
       component: () => import("@/pages/AboutPage.vue"),
     },
+    {
+      path: "/photos",
+      name: "photos",
+      component: () => import("@/pages/PhotoPage.vue"),
+    },
     // 管理后台
     {
       path: "/admin/login",

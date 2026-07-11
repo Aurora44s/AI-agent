@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { RouterLink, useRouter } from "vue-router";
 import { fetchTags, fetchSettings, type Tag } from "@/api";
 import MobileTagSidebar from "@/components/blog/MobileTagSidebar.vue";
-import { HomeIcon, BookOpenIcon, InformationCircleIcon } from "@heroicons/vue/20/solid";
+import { HomeIcon, BookOpenIcon, InformationCircleIcon, CameraIcon } from "@heroicons/vue/20/solid";
 
 const router = useRouter();
 const siteName = ref("遇梦");
@@ -68,6 +68,7 @@ onMounted(async () => {
 const menuItems = [
   { label: "首页", to: "/", icon: HomeIcon },
   { label: "文章", to: "/", icon: BookOpenIcon },
+  { label: "照片", to: "/photos", icon: CameraIcon },
   { label: "关于", to: "/about", icon: InformationCircleIcon },
 ];
 
@@ -128,6 +129,12 @@ function tagColor(idx: number) {
           </RouterLink>
         </div>
 
+        <RouterLink
+          to="/photos"
+          class="shrink-0 px-2.5 py-1.5 text-gray-600 hover:text-primary-600 transition-colors font-medium rounded-lg hover:bg-primary-50"
+        >
+          照片
+        </RouterLink>
         <RouterLink
           to="/about"
           class="shrink-0 px-2.5 py-1.5 text-gray-600 hover:text-primary-600 transition-colors font-medium rounded-lg hover:bg-primary-50"

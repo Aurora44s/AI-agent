@@ -156,3 +156,23 @@ export const createComment = (data: { nickname: string; email: string; content: 
 
 export const deleteComment = (id: number) =>
   api.delete(`/admin/comments/${id}`);
+
+// ============ 照片 API ============
+
+export interface Photo {
+  id: number;
+  title: string;
+  url: string;
+  album: string;
+  createdAt: string;
+}
+
+export const fetchPhotos = () => api.get<Photo[]>("/photos");
+
+export const uploadPhoto = (formData: FormData) =>
+  api.post<{ success: boolean }>("/admin/photos/upload", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+export const deletePhoto = (id: number) =>
+  api.delete(`/admin/photos/${id}`);

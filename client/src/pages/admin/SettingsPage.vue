@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { fetchSettings, updateSettings, createTag, deleteTag, fetchTags, fetchSongs, uploadSong, deleteSong, fetchComments, deleteComment, type Tag, type Song, type Comment } from "@/api";
+import { fetchSettings, updateSettings, createTag, deleteTag, fetchTags, fetchSongs, uploadSong, deleteSong, fetchComments, deleteComment, fetchPhotos, uploadPhoto, deletePhoto, type Tag, type Song, type Comment, type Photo } from "@/api";
 import AdminSidebar from "@/components/admin/AdminSidebar.vue";
 
 const siteName = ref("");
@@ -29,6 +29,7 @@ onMounted(async () => {
 
   loadSongs();
   loadComments();
+  loadPhotos();
 });
 
 async function save() {
@@ -139,6 +140,50 @@ async function removeComment(id: number) {
   } catch {
     alert("删除失败");
   }
+}
+
+// ----- 照片管理 -----
+const photoList = ref<Photo[]>([]);
+const photoTitle = ref("");
+const photoAlbum = ref("");
+const photoFile = ref<File | null>(null);
+const photoUploading = ref(false);
+
+async function loadPhotos() {
+  try {
+    const res = await fetchPhotos();
+    photoList.value = res.data;
+  } catch {}
+}
+
+async function addPhoto() {
+  if (!photoFile.value) { alert("请选择照片"); return; }
+  photoUploading.value = true;
+  try {
+    const fd = new FormData();
+    fd.append("photo", photoFile.value);
+    fd.append("title", photoTitle.value);
+    fd.append("album", photoAlbum.value || "默认相册");
+    await uploadPhoto(fd);
+    photoTitle.value = "";
+    photoAlbum.value = "";
+    photoFile.value = null;
+    await loadPhotos();
+  } catch { alert("上传失败"); }
+  finally { photoUploading.value = false; }
+}
+
+async function removePhoto(id: number) {
+  if (!confirm("确定删除？")) return;
+  try {
+    await deletePhoto(id);
+    photoList.value = photoList.value.filter((p) => p.id !== id);
+  } catch { alert("删除失败"); }
+}
+
+function onPhotoFileChange(e: Event) {
+  const input = e.target as HTMLInputElement;
+  photoFile.value = input.files?.[0] ?? null;
 }
 
 function onFileChange(e: Event, target: "file" | "cover") {
@@ -275,6 +320,44 @@ function onFileChange(e: Event, target: "file" | "cover") {
           </div>
         </div>
         <div v-else class="text-gray-400 text-sm">暂无留言</div>
+      </div>
+
+      <!-- 照片管理 -->
+      <h2 class="text-lg lg:text-xl font-bold text-gray-900 mt-8 mb-4">照片管理</h2>
+      <div class="bg-white rounded-lg shadow-sm border p-4 lg:p-6 max-w-2xl space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">照片标题</label>
+            <input v-model="photoTitle" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="可选" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">相册名</label>
+            <input v-model="photoAlbum" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" placeholder="默认相册" />
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors text-sm">
+            🖼️ 选择照片
+            <input type="file" accept="image/*" class="hidden" @change="onPhotoFileChange" />
+          </label>
+          <span v-if="photoFile" class="text-sm text-gray-500">{{ photoFile.name }}</span>
+          <button @click="addPhoto" :disabled="photoUploading" class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50">
+            {{ photoUploading ? '上传中...' : '上传' }}
+          </button>
+        </div>
+
+        <div v-if="photoList.length > 0" class="border-t pt-4 mt-4 grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div v-for="photo in photoList" :key="photo.id" class="relative group rounded-lg overflow-hidden border border-gray-200">
+            <img :src="photo.url" class="w-full aspect-square object-cover" />
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+              <button @click="removePhoto(photo.id)" class="opacity-0 group-hover:opacity-100 text-white bg-red-500 rounded-lg px-2 py-1 text-xs transition-opacity">删除</button>
+            </div>
+            <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 p-1.5">
+              <p class="text-white text-xs truncate">{{ photo.title || photo.album }}</p>
+            </div>
+          </div>
+        </div>
+        <div v-else class="text-gray-400 text-sm pt-2">暂无照片，请上传</div>
       </div>
     </div>
   </div>
