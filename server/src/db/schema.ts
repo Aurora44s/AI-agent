@@ -61,6 +61,7 @@ export const comments = mysqlTable("comments", {
   nickname: varchar("nickname", { length: 50 }).notNull(),
   email: varchar("email", { length: 200 }).notNull().default(""),
   content: text("content").notNull(),
+  postId: int("post_id"),
   createdAt: datetime("created_at").notNull(),
 });
 

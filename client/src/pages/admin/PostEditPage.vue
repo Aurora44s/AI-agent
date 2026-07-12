@@ -6,8 +6,9 @@ import AdminSidebar from "@/components/admin/AdminSidebar.vue";
 
 const route = useRoute();
 const router = useRouter();
-const isEdit = !!route.params.id;
+const isEdit = !!route.params.slug;
 
+const postId = ref<number | null>(null);
 const title = ref("");
 const slug = ref("");
 const content = ref("");
@@ -24,6 +25,7 @@ async function loadPost() {
   try {
     const res = await fetchPost(route.params.slug as string);
     const p = res.data;
+    postId.value = p.id;
     title.value = p.title;
     slug.value = p.slug;
     content.value = p.content;
@@ -94,8 +96,8 @@ async function handleSave(publishAfter = false) {
       tagIds: selectedTagIds.value,
     };
 
-    if (isEdit) {
-      await updatePost(Number(route.params.id), data);
+    if (isEdit && postId.value) {
+      await updatePost(postId.value, data);
     } else {
       await createPost(data);
     }

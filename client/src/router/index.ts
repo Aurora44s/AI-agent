@@ -58,7 +58,7 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: "/admin/posts/:id/edit",
+      path: "/admin/posts/:slug/edit",
       name: "admin-post-edit",
       component: () => import("@/pages/admin/PostEditPage.vue"),
       meta: { requiresAuth: true },

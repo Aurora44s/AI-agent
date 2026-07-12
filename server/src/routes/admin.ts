@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { db } from "../db";
 import { posts, tags, postTags, settings } from "../db/schema";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, desc } from "drizzle-orm";
 
 const router = Router();
 
@@ -12,7 +12,7 @@ router.get("/", async (req: Request, res: Response) => {
     const limit = Number(req.query.limit) || 20;
     const offset = (page - 1) * limit;
 
-    const allPosts = await db.select().from(posts).orderBy(posts.createdAt);
+    const allPosts = await db.select().from(posts).orderBy(desc(posts.updatedAt));
     const total = allPosts.length;
     const pagedPosts = allPosts.slice(offset, offset + limit);
 

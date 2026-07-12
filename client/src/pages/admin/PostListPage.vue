@@ -57,7 +57,7 @@ onMounted(load);
             <tr v-for="post in posts" :key="post.id" class="border-b hover:bg-gray-50">
               <td class="px-3 lg:px-4 py-3 text-gray-400">{{ post.id }}</td>
               <td class="px-3 lg:px-4 py-3">
-                <RouterLink :to="`/admin/posts/${post.id}/edit`" class="text-blue-600 hover:underline">
+                <RouterLink :to="`/admin/posts/${post.slug}/edit`" class="text-blue-600 hover:underline">
                   {{ post.title }}
                 </RouterLink>
               </td>
@@ -68,7 +68,7 @@ onMounted(load);
               <td class="px-3 lg:px-4 py-3 text-gray-400 text-xs">{{ post.updatedAt?.slice(0, 10) }}</td>
               <td class="px-3 lg:px-4 py-3">
                 <div class="flex gap-2">
-                  <RouterLink :to="`/admin/posts/${post.id}/edit`" class="text-blue-600 hover:underline text-xs">编辑</RouterLink>
+                  <RouterLink :to="`/admin/posts/${post.slug}/edit`" class="text-blue-600 hover:underline text-xs">编辑</RouterLink>
                   <button @click="handleDelete(post.id, post.title)" class="text-red-500 hover:underline text-xs">删除</button>
                 </div>
               </td>

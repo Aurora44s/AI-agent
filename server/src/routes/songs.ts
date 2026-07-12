@@ -77,7 +77,7 @@ router.post(
         createdAt: new Date(),
       });
 
-      res.json({ id: (result as any).insertId, title, artist });
+      res.json({ id: (result as any)[0].insertId, title, artist });
     } catch (err) {
       next(err);
     }

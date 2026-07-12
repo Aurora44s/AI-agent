@@ -109,9 +109,7 @@ export const deleteTag = (id: number) =>
 export const uploadImage = (file: File) => {
   const formData = new FormData();
   formData.append("image", file);
-  return api.post<{ url: string }>("/admin/upload", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  return api.post<{ url: string }>("/admin/upload", formData);
 };
 
 export const updateSettings = (settings: Record<string, string>) =>
@@ -132,9 +130,7 @@ export interface Song {
 export const fetchSongs = () => api.get<Song[]>("/songs");
 
 export const uploadSong = (formData: FormData) =>
-  api.post<{ id: number; title: string; artist: string }>("/admin/songs/upload", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  api.post<{ id: number; title: string; artist: string }>("/admin/songs/upload", formData);
 
 export const deleteSong = (id: number) =>
   api.delete(`/admin/songs/${id}`);
@@ -146,12 +142,17 @@ export interface Comment {
   nickname: string;
   email: string;
   content: string;
+  postId: number | null;
   createdAt: string;
 }
 
-export const fetchComments = () => api.get<Comment[]>("/comments");
+export const fetchComments = (postId?: number) =>
+  api.get<Comment[]>("/comments", { params: postId ? { postId } : {} });
 
-export const createComment = (data: { nickname: string; email: string; content: string }) =>
+export const fetchAllComments = () =>
+  api.get<Comment[]>("/admin/comments", { params: { all: 1 } });
+
+export const createComment = (data: { nickname: string; email: string; content: string; postId?: number }) =>
   api.post<{ success: boolean }>("/comments", data);
 
 export const deleteComment = (id: number) =>
@@ -170,9 +171,7 @@ export interface Photo {
 export const fetchPhotos = () => api.get<Photo[]>("/photos");
 
 export const uploadPhoto = (formData: FormData) =>
-  api.post<{ success: boolean }>("/admin/photos/upload", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  api.post<{ success: boolean }>("/admin/photos/upload", formData);
 
 export const deletePhoto = (id: number) =>
   api.delete(`/admin/photos/${id}`);

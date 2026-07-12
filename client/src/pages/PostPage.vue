@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
-import { fetchPost, fetchSettings, type Post } from "@/api";
+import { fetchPost, fetchSettings, fetchComments, createComment, type Post, type Comment } from "@/api";
 import MarkdownIt from "markdown-it";
 import hljs from "highlight.js";
 import TagBadge from "@/components/blog/TagBadge.vue";
@@ -47,12 +47,46 @@ onMounted(async () => {
     ]);
     post.value = postRes.data;
     siteSettings.value = settingsRes.data;
+    loadComments();
   } catch {
     console.error("加载文章失败");
   } finally {
     loading.value = false;
   }
 });
+
+// 文章评论
+const comments = ref<Comment[]>([]);
+const commentForm = ref({ nickname: "", email: "", content: "" });
+const commentSubmitting = ref(false);
+
+async function loadComments() {
+  if (!post.value) return;
+  try {
+    const res = await fetchComments(post.value.id);
+    comments.value = res.data;
+  } catch {}
+}
+
+async function submitComment() {
+  if (!post.value) return;
+  const n = commentForm.value.nickname.trim();
+  const c = commentForm.value.content.trim();
+  if (!n || !c) return;
+  commentSubmitting.value = true;
+  try {
+    await createComment({ nickname: n, email: commentForm.value.email.trim(), content: c, postId: post.value.id });
+    commentForm.value.content = "";
+    await loadComments();
+  } catch { alert("评论失败"); }
+  finally { commentSubmitting.value = false; }
+}
+
+function fmtTime(d: string) {
+  const date = new Date(d);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
 
 useSEO(() => post.value);
 </script>
@@ -95,14 +129,46 @@ useSEO(() => post.value);
         <div class="prose max-w-none" v-html="md.render(post.content)"></div>
       </div>
 
-      <!-- Giscus 评论区 -->
+      <!-- 评论区 -->
       <div class="mt-10">
         <div class="h-1 bg-gradient-primary rounded-full mb-8"></div>
         <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-6">💬 评论</h2>
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6">
-          <GiscusComment v-if="showGiscus" v-bind="giscusConfig" />
-          <div v-else class="text-center text-gray-400 text-sm py-8">
-            评论功能暂未开启，请在后台设置中配置 Giscus 参数。
+
+        <!-- Giscus -->
+        <div v-if="showGiscus" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 mb-6">
+          <GiscusComment v-bind="giscusConfig" />
+        </div>
+
+        <!-- 本地评论表单 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 mb-4">
+          <p class="text-sm font-semibold text-gray-700 mb-3">发表评论</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+            <input v-model="commentForm.nickname" type="text" placeholder="昵称 *" maxlength="50"
+              class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
+            <input v-model="commentForm.email" type="email" placeholder="邮箱（选填）" maxlength="200"
+              class="px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400" />
+          </div>
+          <textarea v-model="commentForm.content" placeholder="写下你的想法..." maxlength="2000" rows="2"
+            class="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none mb-2"></textarea>
+          <button :disabled="commentSubmitting"
+            class="px-4 py-2 bg-gradient-primary text-white text-sm font-medium rounded-xl hover:shadow-glow transition-all disabled:opacity-50"
+            @click="submitComment">
+            {{ commentSubmitting ? '提交中...' : '发表评论' }}
+          </button>
+        </div>
+
+        <!-- 评论列表 -->
+        <div v-if="comments.length > 0" class="space-y-3">
+          <div v-for="c in comments" :key="c.id"
+            class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+            <div class="flex items-center gap-2 mb-2">
+              <div class="w-7 h-7 rounded-full bg-gradient-to-br from-primary-400 to-purple-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
+                {{ c.nickname.charAt(0).toUpperCase() }}
+              </div>
+              <span class="text-sm font-semibold text-gray-800">{{ c.nickname }}</span>
+              <span class="text-xs text-gray-300 ml-auto">{{ fmtTime(c.createdAt) }}</span>
+            </div>
+            <p class="text-sm text-gray-600 leading-relaxed">{{ c.content }}</p>
           </div>
         </div>
       </div>

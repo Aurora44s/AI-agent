@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { fetchSettings, updateSettings, createTag, deleteTag, fetchTags, fetchSongs, uploadSong, deleteSong, fetchComments, deleteComment, fetchPhotos, uploadPhoto, deletePhoto, type Tag, type Song, type Comment, type Photo } from "@/api";
+import { fetchSettings, updateSettings, createTag, deleteTag, fetchTags, fetchSongs, uploadSong, deleteSong, fetchComments, fetchAllComments, deleteComment, fetchPhotos, uploadPhoto, deletePhoto, type Tag, type Song, type Comment, type Photo } from "@/api";
 import AdminSidebar from "@/components/admin/AdminSidebar.vue";
 
 const siteName = ref("");
@@ -127,7 +127,7 @@ const commentList = ref<Comment[]>([]);
 
 async function loadComments() {
   try {
-    const res = await fetchComments();
+    const res = await fetchAllComments();
     commentList.value = res.data;
   } catch {}
 }
@@ -311,6 +311,8 @@ function onFileChange(e: Event, target: "file" | "cover") {
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2 mb-1">
                 <span class="text-sm font-semibold text-gray-800">{{ comment.nickname }}</span>
+                <span v-if="comment.postId" class="text-[10px] bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded">文章评论 #{{ comment.postId }}</span>
+                <span v-else class="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded">留言板</span>
                 <span v-if="comment.email" class="text-xs text-gray-400">({{ comment.email }})</span>
                 <span class="text-xs text-gray-300 ml-auto">{{ comment.createdAt?.slice(0, 16).replace("T", " ") }}</span>
               </div>

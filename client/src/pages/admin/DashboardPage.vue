@@ -42,7 +42,7 @@ onMounted(async () => {
           <tbody>
             <tr v-for="post in recentPosts" :key="post.id" class="border-b hover:bg-gray-50">
               <td class="px-3 lg:px-4 py-3">
-                <RouterLink :to="`/admin/posts/${post.id}/edit`" class="text-blue-600 hover:underline">
+                <RouterLink :to="`/admin/posts/${post.slug}/edit`" class="text-blue-600 hover:underline">
                   {{ post.title }}
                 </RouterLink>
               </td>
