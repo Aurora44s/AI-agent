@@ -21,6 +21,7 @@ const audioEl = ref<HTMLAudioElement | null>(null);
 const lyricsContainer = ref<HTMLDivElement | null>(null);
 const panelEl = ref<HTMLDivElement | null>(null);
 const playlistBtnEl = ref<HTMLButtonElement | null>(null);
+const playlistEl = ref<HTMLDivElement | null>(null);
 
 const playlistPos = computed(() => {
   if (!playlistBtnEl.value) return {};
@@ -119,7 +120,8 @@ function close() {
 // 点击面板外部关闭
 function onDocumentClick(e: MouseEvent) {
   if (!panelEl.value || !expanded.value) return;
-  if (!panelEl.value.contains(e.target as Node)) close();
+  const target = e.target as Node;
+  if (!panelEl.value.contains(target) && !playlistEl.value?.contains(target)) close();
 }
 watch(panelVisible, (val) => {
   if (val) {
@@ -348,6 +350,7 @@ function fmtTime(t: number) {
           </button>
           <Teleport to="body">
             <div
+              ref="playlistEl"
               v-if="showPlaylist"
               :style="{ top: playlistPos.top, right: playlistPos.right }"
               class="fixed z-[60] w-52 bg-white/60 backdrop-blur-xl rounded-xl shadow-xl border border-white/40 py-1 max-h-56 overflow-y-auto"

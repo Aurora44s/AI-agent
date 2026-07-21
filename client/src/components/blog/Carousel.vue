@@ -15,21 +15,21 @@ const slides: Slide[] = [
     subtitle: "分享技术与生活的点滴",
     gradient: "from-primary-500 via-purple-500 to-pink-500",
     emoji: "🚀",
-    // image: "https://example.com/banner1.jpg",
+    image: "/c25bdb2a33bf1021a05d4317d3fec6f6_720.jpg",
   },
   {
     title: "探索精彩内容",
     subtitle: "前端开发 · 后端架构 · 生活随笔",
     gradient: "from-accent-500 via-teal-500 to-cyan-500",
     emoji: "✨",
-    // image: "https://example.com/banner2.jpg",
+    image: "/c25bdb2a33bf1021a05d4317d3fec6f6_720.jpg",
   },
   {
     title: "用心书写每一篇文章",
     subtitle: "记录成长，分享知识",
     gradient: "from-amber-500 via-orange-500 to-rose-500",
     emoji: "📝",
-    image: "/668fa499e751a1eba53f382192ec2631.jpg",
+    image: "/c25bdb2a33bf1021a05d4317d3fec6f6_720.jpg",
   },
   {
     title: "保持好奇心",
@@ -154,12 +154,6 @@ onUnmounted(stopAutoPlay);
       </svg>
     </div>
 
-    <!-- 底部波浪 -->
-    <div class="absolute bottom-0 left-0 right-0 z-10">
-      <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
-        <path d="M0 48h1440V0c-141.6 23.2-424.8 33.6-720 19.2C424.8 4.8 141.6 8.8 0 24v24z" fill="currentColor" class="text-gray-50/80" />
-      </svg>
-    </div>
   </section>
 </template>
 

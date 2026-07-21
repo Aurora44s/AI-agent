@@ -8,8 +8,8 @@ defineProps<{ post: PostType }>();
 
 <template>
   <article
-    class="card-accent group bg-white rounded-2xl shadow-md border border-gray-100 p-4 md:p-6
-           hover:shadow-glow hover:border-primary-200 hover:-translate-y-1
+    class="card-accent group bg-white/70 backdrop-blur-md rounded-2xl shadow-md border border-white/60 p-4 md:p-6
+           hover:shadow-glow hover:border-primary-300 hover:-translate-y-1
            transition-all duration-300 ease-out"
   >
     <RouterLink :to="`/post/${post.slug}`" class="block">

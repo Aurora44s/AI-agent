@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 md:p-6 animate-pulse">
+  <div class="bg-white/70 backdrop-blur-md rounded-xl shadow-sm border border-white/60 p-4 md:p-6 animate-pulse">
     <!-- 封面占位 -->
     <div class="w-full h-40 md:h-48 bg-gray-200 rounded-lg mb-3 md:mb-4"></div>
     <!-- 标题占位 -->

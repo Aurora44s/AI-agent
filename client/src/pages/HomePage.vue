@@ -2,7 +2,6 @@
 import { ref, onMounted } from "vue";
 import { fetchPosts, type Post } from "@/api";
 import PostCard from "@/components/blog/PostCard.vue";
-import Carousel from "@/components/blog/Carousel.vue";
 import SkeletonCard from "@/components/blog/SkeletonCard.vue";
 import RevealWrapper from "@/components/blog/RevealWrapper.vue";
 import Guestbook from "@/components/blog/Guestbook.vue";
@@ -32,13 +31,62 @@ const totalPages = () => Math.ceil(total.value / 10);
 
 <template>
   <div>
-    <!-- 轮播图（sticky 固定，内容上滑覆盖） -->
+    <!-- 背景图（sticky 固定，内容上滑覆盖） -->
     <div class="sticky top-0 z-0">
-      <Carousel />
+      <section class="relative overflow-hidden h-[80vh] md:h-screen">
+        <!-- 背景图片 -->
+        <img
+          src="/c25bdb2a33bf1021a05d4317d3fec6f6_720.jpg"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
+        <!-- 暗色遮罩 -->
+        <div class="absolute inset-0 bg-black/40"></div>
+        <!-- 浮动装饰 -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+          <div class="absolute -top-20 -left-20 w-72 h-72 bg-primary-200/30 rounded-full blur-3xl animate-float" style="animation-delay: 0s"></div>
+          <div class="absolute top-1/2 -right-16 w-64 h-64 bg-purple-200/30 rounded-full blur-3xl animate-float" style="animation-delay: 2s"></div>
+          <div class="absolute -bottom-16 left-1/3 w-48 h-48 bg-pink-200/20 rounded-full blur-3xl animate-float" style="animation-delay: 4s"></div>
+        </div>
+        <!-- 文字 -->
+        <div class="relative h-full flex flex-col items-center justify-center px-4 text-center text-white">
+          <span class="text-4xl md:text-6xl mb-4 md:mb-6">🚀</span>
+          <h1 class="text-2xl md:text-4xl lg:text-5xl font-extrabold mb-3 md:mb-4 drop-shadow-lg">
+            欢迎来到遇梦
+          </h1>
+          <p class="text-sm md:text-lg text-white/80 max-w-md drop-shadow">
+            分享技术与生活的点滴
+          </p>
+        </div>
+      </section>
     </div>
 
-    <!-- 文章列表（上滑覆盖轮播图） -->
-    <div class="relative z-10 -mt-12 md:-mt-20 bg-gray-50/60 backdrop-blur-xl rounded-t-3xl">
+    <!-- 文章列表（紧接海浪下方） -->
+    <div class="relative z-10 bg-gray-50 backdrop-blur-xl">
+      <!-- 海浪效果 - 向上溢出到轮播图区域 -->
+      <div class="absolute bottom-full left-0 right-0 pointer-events-none overflow-hidden wave-container">
+        <!-- 波层3 (最后/最淡,高振幅) -->
+        <div class="wave-layer wave-layer--back">
+          <svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,60 C180,0 420,100 720,40 C1020,-10 1260,100 1440,30 L1440,100 L0,100 Z"
+                  fill="rgba(249,250,251,0.25)" />
+          </svg>
+        </div>
+        <!-- 波层2 (中间,中高振幅) -->
+        <div class="wave-layer wave-layer--mid">
+          <svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,50 C240,5 480,95 720,35 C960,0 1200,90 1440,40 L1440,100 L0,100 Z"
+                  fill="rgba(249,250,251,0.45)" />
+          </svg>
+        </div>
+        <!-- 波层1 (最前/最浓) -->
+        <div class="wave-layer wave-layer--front">
+          <svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,55 C300,15 600,85 900,45 C1150,10 1380,60 1440,40 L1440,100 L0,100 Z"
+                  fill="rgba(249,250,251,1)" />
+          </svg>
+        </div>
+      </div>
+
     <div class="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 pt-8 md:pt-12 pb-8 md:pb-12">
       <!-- 区域标题 -->
       <div class="flex items-center gap-3 mb-6 md:mb-8">
