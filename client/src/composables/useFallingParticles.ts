@@ -1,110 +1,146 @@
 /**
- * 彩色圆形粒子从页面顶部向下滑落，在页面中部淡出消失
- * 粒子持续生成，CSS @keyframes 驱动动画，GPU 加速
+ * 樱花花瓣飘落效果 —— Canvas 绘制
+ * 花瓣缓慢旋转 + 正弦曲线左右飘动，粉白色系随机大小
  */
 
-const COLORS = [
-  "#6366f1", // primary
-  "#ec4899", // pink
-  "#f59e0b", // amber
-  "#14b8a6", // accent
-  "#a855f7", // purple
-  "#f43f5e", // rose
-  "#0ea5e9", // sky
-  "#84cc16", // lime
-  "#f97316", // orange
-];
-
-const MIN_SIZE = 3;
-const MAX_SIZE = 8;
-const MIN_DURATION = 3; // 秒
-const MAX_DURATION = 6;
-const MIN_INTERVAL = 60; // 毫秒
-const MAX_INTERVAL = 200;
-const MAX_PARTICLES = 100;
-const DRIFT_RANGE = 35; // 水平飘动范围 px
-
-let styleInjected = false;
-
-function injectKeyframes() {
-  if (styleInjected) return;
-  styleInjected = true;
-
-  const style = document.createElement("style");
-  style.textContent = `
-    @keyframes fall-particle {
-      0%   { opacity: 0;   transform: translateY(-20px) translateX(0); }
-      15%  { opacity: 0.85; transform: translateY(15vh) translateX(calc(var(--drift) * 0.25)); }
-      60%  { opacity: 0.6;  transform: translateY(40vh) translateX(calc(var(--drift) * 0.6)); }
-      85%  { opacity: 0.2;  transform: translateY(52vh) translateX(calc(var(--drift) * 0.85)); }
-      100% { opacity: 0;    transform: translateY(58vh) translateX(var(--drift)); }
-    }
-  `;
-  document.head.appendChild(style);
+interface Petal {
+  x: number;
+  y: number;
+  size: number;        // 花瓣缩放 0.4-1.2
+  rotation: number;    // 当前角度
+  rotSpeed: number;    // 旋转速度 rad/s
+  swingAmp: number;    // 左右摆动幅度 px
+  swingSpeed: number;  // 摆动频率
+  swingPhase: number;  // 摆动初相
+  speedY: number;      // 下落速度 px/s
+  r: number; g: number; b: number;  // 粉色系
+  opacity: number;
 }
 
-function randomBetween(min: number, max: number): number {
+const PETAL_COUNT = 50;
+const MIN_SIZE = 0.35;
+const MAX_SIZE = 0.8;
+const MIN_SPEED = 30;   // px/s
+const MAX_SPEED = 80;
+const MIN_ROT = 0.3;    // rad/s
+const MAX_ROT = 1.5;
+const MIN_SWING_AMP = 30;
+const MAX_SWING_AMP = 80;
+const MIN_SWING_SPEED = 0.5;
+const MAX_SWING_SPEED = 1.5;
+
+function rand(min: number, max: number) {
   return Math.random() * (max - min) + min;
 }
 
-function spawnParticle() {
-  // 限流
-  const existing = document.querySelectorAll(".falling-particle");
-  if (existing.length >= MAX_PARTICLES) return;
+function createPetal(canvasW: number, canvasH: number): Petal {
+  // 粉色到白色范围
+  const pinkness = Math.random(); // 0=白, 1=深粉
+  return {
+    x: Math.random() * canvasW,
+    y: -20 - Math.random() * canvasH, // 从顶部上方随机位置开始
+    size: rand(MIN_SIZE, MAX_SIZE),
+    rotation: Math.random() * Math.PI * 2,
+    rotSpeed: rand(MIN_ROT, MAX_ROT) * (Math.random() > 0.5 ? 1 : -1),
+    swingAmp: rand(MIN_SWING_AMP, MAX_SWING_AMP),
+    swingSpeed: rand(MIN_SWING_SPEED, MAX_SWING_SPEED),
+    swingPhase: Math.random() * Math.PI * 2,
+    speedY: rand(MIN_SPEED, MAX_SPEED),
+    r: Math.floor(240 + pinkness * 15),       // 240-255
+    g: Math.floor(140 + pinkness * 60),       // 140-200
+    b: Math.floor(150 + pinkness * 60),       // 150-210
+    opacity: rand(0.35, 0.85),
+  };
+}
 
-  const particle = document.createElement("span");
-  particle.className = "falling-particle";
+function drawPetal(ctx: CanvasRenderingContext2D, p: Petal) {
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  ctx.rotate(p.rotation);
+  ctx.scale(p.size, p.size);
+  ctx.globalAlpha = p.opacity;
+  ctx.fillStyle = `rgb(${p.r},${p.g},${p.b})`;
 
-  const size = randomBetween(MIN_SIZE, MAX_SIZE);
-  const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-  const duration = randomBetween(MIN_DURATION, MAX_DURATION);
-  const left = randomBetween(2, 98); // 视口宽度的百分比
-  const drift = randomBetween(-DRIFT_RANGE, DRIFT_RANGE);
+  // 绘制5瓣樱花
+  for (let i = 0; i < 5; i++) {
+    ctx.rotate((Math.PI * 2) / 5);
+    ctx.beginPath();
+    // 每个瓣片是一个拉长的椭圆，向外偏移
+    ctx.ellipse(3, 0, 5, 1.8, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
-  particle.style.cssText = `
-    position: fixed;
-    top: -${size + 10}px;
-    left: ${left}vw;
-    width: ${size}px;
-    height: ${size}px;
-    border-radius: 50%;
-    background: ${color};
-    pointer-events: none;
-    z-index: 9998;
-    --drift: ${drift}px;
-    animation: fall-particle ${duration}s linear forwards;
-    box-shadow: 0 0 ${size * 0.8}px ${color}44;
-  `;
+  // 中心小圆
+  ctx.beginPath();
+  ctx.arc(0, 0, 1.5, 0, Math.PI * 2);
+  ctx.fillStyle = `rgba(255,180,180,${p.opacity + 0.15})`;
+  ctx.fill();
 
-  document.body.appendChild(particle);
-
-  // 动画结束后移除
-  particle.addEventListener("animationend", () => {
-    particle.remove();
-  });
+  ctx.restore();
 }
 
 export function useFallingParticles() {
-  injectKeyframes();
+  const canvas = document.createElement("canvas");
+  canvas.style.cssText = "position:fixed;inset:0;pointer-events:none;z-index:100;";
+  document.body.appendChild(canvas);
 
-  // 首次立即生成一批粒子
-  for (let i = 0; i < 20; i++) {
-    setTimeout(() => spawnParticle(), i * 50);
+  const ctx = canvas.getContext("2d")!;
+  let animId: number;
+  let lastTime = performance.now();
+  const petals: Petal[] = [];
+  let w = 0, h = 0;
+
+  function resize() {
+    w = window.innerWidth;
+    h = window.innerHeight;
+    canvas.width = w * devicePixelRatio;
+    canvas.height = h * devicePixelRatio;
+    canvas.style.width = w + "px";
+    canvas.style.height = h + "px";
+    ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
   }
 
-  // 定时持续生成
-  let timer: ReturnType<typeof setTimeout>;
-  function scheduleNext() {
-    timer = setTimeout(() => {
-      spawnParticle();
-      scheduleNext();
-    }, randomBetween(MIN_INTERVAL, MAX_INTERVAL));
-  }
-  scheduleNext();
+  resize();
+  window.addEventListener("resize", resize);
 
-  // 返回清理函数
+  // 初始化花瓣池
+  for (let i = 0; i < PETAL_COUNT; i++) {
+    petals.push(createPetal(w, h));
+  }
+
+  function tick(now: number) {
+    const dt = Math.min((now - lastTime) / 1000, 0.1); // 防止跳帧过大
+    lastTime = now;
+
+    ctx.clearRect(0, 0, w, h);
+
+    for (const p of petals) {
+      // 下落
+      p.y += p.speedY * dt;
+      // 旋转
+      p.rotation += p.rotSpeed * dt;
+      // 正弦摆动
+      p.x += Math.sin(now * 0.001 * p.swingSpeed + p.swingPhase) * p.swingAmp * dt;
+
+      // 超出底部或左右太远 → 回收
+      if (p.y > h + 40 || p.x < -60 || p.x > w + 60) {
+        p.y = -40 - Math.random() * 60;
+        p.x = Math.random() * w;
+        p.rotation = Math.random() * Math.PI * 2;
+        p.swingPhase = Math.random() * Math.PI * 2;
+      }
+
+      drawPetal(ctx, p);
+    }
+
+    animId = requestAnimationFrame(tick);
+  }
+
+  animId = requestAnimationFrame(tick);
+
   return () => {
-    clearTimeout(timer);
-    document.querySelectorAll(".falling-particle").forEach((el) => el.remove());
+    cancelAnimationFrame(animId);
+    window.removeEventListener("resize", resize);
+    canvas.remove();
   };
 }

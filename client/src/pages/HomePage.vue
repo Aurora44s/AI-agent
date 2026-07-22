@@ -5,6 +5,8 @@ import PostCard from "@/components/blog/PostCard.vue";
 import SkeletonCard from "@/components/blog/SkeletonCard.vue";
 import RevealWrapper from "@/components/blog/RevealWrapper.vue";
 import Guestbook from "@/components/blog/Guestbook.vue";
+import ProfileCard from "@/components/blog/ProfileCard.vue";
+import StatsPanel from "@/components/blog/StatsPanel.vue";
 
 const postList = ref<Post[]>([]);
 const total = ref(0);
@@ -87,7 +89,19 @@ const totalPages = () => Math.ceil(total.value / 10);
         </div>
       </div>
 
-    <div class="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 pt-8 md:pt-12 pb-8 md:pb-12">
+    <div class="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 pt-8 md:pt-12 pb-8 md:pb-12 relative">
+      <!-- 左侧: 个人名片 (桌面端在文章区域左侧外部) -->
+      <aside class="hidden lg:block absolute right-full mr-8 top-8 md:top-12 w-60">
+        <div class="sticky top-20 space-y-4">
+          <RevealWrapper :delay="0">
+            <ProfileCard />
+          </RevealWrapper>
+          <RevealWrapper :delay="100">
+            <StatsPanel />
+          </RevealWrapper>
+        </div>
+      </aside>
+
       <!-- 区域标题 -->
       <div class="flex items-center gap-3 mb-6 md:mb-8">
         <div class="h-0.5 flex-1 bg-gray-200"></div>
