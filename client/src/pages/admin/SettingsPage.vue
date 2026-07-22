@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { fetchSettings, updateSettings, createTag, deleteTag, fetchTags, fetchSongs, uploadSong, deleteSong, fetchComments, fetchAllComments, deleteComment, fetchPhotos, uploadPhoto, deletePhoto, type Tag, type Song, type Comment, type Photo } from "@/api";
+import { fetchSettings, updateSettings, createTag, deleteTag, fetchTags, fetchSongs, uploadSong, deleteSong, fetchComments, fetchAllComments, deleteComment, fetchPhotos, uploadPhoto, deletePhoto, fetchMoments, createMoment, deleteMoment, type Tag, type Song, type Comment, type Photo, type Moment } from "@/api";
 import AdminSidebar from "@/components/admin/AdminSidebar.vue";
 
 const siteName = ref("");
@@ -192,6 +192,71 @@ function onFileChange(e: Event, target: "file" | "cover") {
   if (target === "file") songFile.value = file ?? null;
   else songCover.value = file ?? null;
 }
+
+// ----- 说说管理 -----
+const momentList = ref<Moment[]>([]);
+const momentContent = ref("");
+const momentImages = ref<string[]>([]);
+const momentUploading = ref(false);
+
+async function loadMoments() {
+  try {
+    const res = await fetchMoments({ limit: 50 });
+    momentList.value = res.data.moments;
+  } catch {}
+}
+
+async function addMoment() {
+  if (!momentContent.value.trim()) {
+    alert("请输入说说内容");
+    return;
+  }
+  momentUploading.value = true;
+  try {
+    await createMoment({
+      content: momentContent.value,
+      images: momentImages.value,
+    });
+    momentContent.value = "";
+    momentImages.value = [];
+    await loadMoments();
+  } catch {
+    alert("发布失败");
+  } finally {
+    momentUploading.value = false;
+  }
+}
+
+async function removeMoment(id: number) {
+  if (!confirm("确定删除这条说说？")) return;
+  try {
+    await deleteMoment(id);
+    momentList.value = momentList.value.filter((m) => m.id !== id);
+  } catch {
+    alert("删除失败");
+  }
+}
+
+async function onMomentImageUpload(e: Event) {
+  const input = e.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+  const fd = new FormData();
+  fd.append("image", file);
+  try {
+    const { uploadImage } = await import("@/api");
+    const res = await uploadImage(file);
+    momentImages.value.push(res.data.url);
+  } catch {
+    alert("图片上传失败");
+  }
+}
+
+function removeMomentImage(idx: number) {
+  momentImages.value.splice(idx, 1);
+}
+
+onMounted(() => { loadMoments(); });
 </script>
 
 <template>
@@ -360,6 +425,61 @@ function onFileChange(e: Event, target: "file" | "cover") {
           </div>
         </div>
         <div v-else class="text-gray-400 text-sm pt-2">暂无照片，请上传</div>
+      </div>
+
+      <!-- ===== 说说管理 ===== -->
+      <h2 class="text-lg lg:text-xl font-bold text-gray-900 mt-8 mb-4">说说管理</h2>
+      <div class="bg-white rounded-lg shadow-sm border p-4 lg:p-6 max-w-2xl space-y-4">
+        <!-- 发布表单 -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">说说内容</label>
+          <textarea
+            v-model="momentContent"
+            rows="4"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            placeholder="分享你的想法..."
+          ></textarea>
+        </div>
+
+        <!-- 图片预览 -->
+        <div v-if="momentImages.length > 0" class="flex gap-2 flex-wrap">
+          <div v-for="(img, idx) in momentImages" :key="idx" class="relative">
+            <img :src="img" class="w-16 h-16 object-cover rounded-lg border" />
+            <button
+              @click="removeMomentImage(idx)"
+              class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center hover:bg-red-600"
+            >×</button>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors text-sm">
+            🖼️ 添加图片
+            <input type="file" accept="image/*" class="hidden" @change="onMomentImageUpload" />
+          </label>
+          <button
+            @click="addMoment"
+            :disabled="momentUploading"
+            class="px-5 py-2 bg-gradient-primary text-white text-sm rounded-lg hover:shadow-glow disabled:opacity-50 transition-all"
+          >
+            {{ momentUploading ? '发布中...' : '发布说说' }}
+          </button>
+        </div>
+
+        <!-- 说说列表 -->
+        <div v-if="momentList.length > 0" class="border-t pt-4 mt-4 space-y-3">
+          <div v-for="m in momentList" :key="m.id" class="flex items-start gap-3 p-3 rounded-lg border border-gray-100 hover:border-gray-200 transition-colors">
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-gray-800 line-clamp-3 whitespace-pre-wrap">{{ m.content }}</p>
+              <div v-if="m.images && m.images.length > 0" class="flex gap-1 mt-2">
+                <img v-for="(img, i) in m.images.slice(0, 3)" :key="i" :src="img" class="w-10 h-10 object-cover rounded border" />
+              </div>
+              <p class="text-xs text-gray-400 mt-1">{{ m.createdAt?.slice(0, 16) }}</p>
+            </div>
+            <button @click="removeMoment(m.id)" class="text-xs text-red-500 hover:text-red-600 hover:underline shrink-0">删除</button>
+          </div>
+        </div>
+        <div v-else class="text-gray-400 text-sm pt-2">暂无说说，来写第一条吧！</div>
       </div>
     </div>
   </div>

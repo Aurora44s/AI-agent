@@ -25,8 +25,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto px-3 sm:px-4 lg:px-6 py-6 md:py-8">
-    <div v-if="loading" class="text-center py-12 text-gray-400">加载中...</div>
+  <div class="min-h-screen relative bg-fixed bg-cover bg-center" style="background-image: url('/c25bdb2a33bf1021a05d4317d3fec6f6_720.jpg')">
+    <div class="absolute inset-0 bg-white/10 backdrop-blur-xl"></div>
+    <div class="relative max-w-3xl mx-auto px-3 sm:px-4 lg:px-6 py-6 md:py-8">
+      <div v-if="loading" class="text-center py-12 text-gray-400">加载中...</div>
     <div v-else>
       <!-- 页头 -->
       <div class="mb-6 md:mb-8">
@@ -52,6 +54,7 @@ onMounted(async () => {
           GitHub
         </a>
       </div>
+    </div>
     </div>
   </div>
 </template>

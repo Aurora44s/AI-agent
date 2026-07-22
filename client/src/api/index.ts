@@ -175,3 +175,24 @@ export const uploadPhoto = (formData: FormData) =>
 
 export const deletePhoto = (id: number) =>
   api.delete(`/admin/photos/${id}`);
+
+// ============ 说说 API ============
+
+export interface Moment {
+  id: number;
+  content: string;
+  images: string[];
+  createdAt: string;
+}
+
+export const fetchMoments = (params?: { page?: number; limit?: number; search?: string }) =>
+  api.get<{ moments: Moment[]; total: number }>("/moments", { params });
+
+export const fetchMoment = (id: number) =>
+  api.get<Moment>(`/moments/${id}`);
+
+export const createMoment = (data: { content: string; images: string[] }) =>
+  api.post<Moment>("/admin/moments", data);
+
+export const deleteMoment = (id: number) =>
+  api.delete(`/admin/moments/${id}`);

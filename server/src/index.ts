@@ -14,6 +14,7 @@ import adminRouter from "./routes/admin";
 import songsRouter from "./routes/songs";
 import commentsRouter from "./routes/comments";
 import photosRouter from "./routes/photos";
+import momentsRouter from "./routes/moments";
 import { authMiddleware } from "./middleware/auth";
 import { errorHandler } from "./middleware/errorHandler";
 
@@ -43,6 +44,8 @@ app.use("/api/comments", commentsRouter);
 app.use("/api/admin/comments", commentsRouter);
 app.use("/api/photos", photosRouter);
 app.use("/api/admin/photos", photosRouter);
+app.use("/api/moments", momentsRouter);
+app.use("/api/admin/moments", momentsRouter);
 
   // 需要认证的后台 API
   app.use("/api/admin/upload", authMiddleware, uploadRouter);

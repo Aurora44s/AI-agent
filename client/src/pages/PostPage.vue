@@ -92,7 +92,9 @@ useSEO(() => post.value);
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto px-3 sm:px-4 lg:px-6 py-6 md:py-8">
+  <div class="min-h-screen relative bg-fixed bg-cover bg-center" style="background-image: url('/c25bdb2a33bf1021a05d4317d3fec6f6_720.jpg')">
+    <div class="absolute inset-0 bg-white/10 backdrop-blur-xl"></div>
+    <div class="relative max-w-3xl mx-auto px-3 sm:px-4 lg:px-6 py-6 md:py-8">
     <!-- 骨架屏 -->
     <SkeletonPost v-if="loading" />
 
@@ -175,5 +177,6 @@ useSEO(() => post.value);
     </div>
 
     <div v-else class="text-center py-12 text-gray-400">文章不存在</div>
+  </div>
   </div>
 </template>

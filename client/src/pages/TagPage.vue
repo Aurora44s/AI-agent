@@ -28,8 +28,10 @@ watch(() => route.params.slug, load);
 </script>
 
 <template>
-  <div class="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-6 md:py-8">
-    <div class="mb-6 md:mb-8">
+  <div class="min-h-screen relative bg-fixed bg-cover bg-center" style="background-image: url('/c25bdb2a33bf1021a05d4317d3fec6f6_720.jpg')">
+    <div class="absolute inset-0 bg-white/10 backdrop-blur-xl"></div>
+    <div class="relative max-w-4xl mx-auto px-3 sm:px-4 lg:px-6 py-6 md:py-8">
+      <div class="mb-6 md:mb-8">
       <h1 class="text-xl md:text-2xl font-bold text-gray-900 mb-1">
         标签：<span class="text-gradient">{{ route.params.slug }}</span>
       </h1>
@@ -49,6 +51,7 @@ watch(() => route.params.slug, load);
     <div v-else class="text-center py-16">
       <div class="text-4xl mb-3">🏷️</div>
       <p class="text-gray-400">该标签下暂无文章</p>
+    </div>
     </div>
   </div>
 </template>

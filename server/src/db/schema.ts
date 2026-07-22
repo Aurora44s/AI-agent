@@ -1,4 +1,4 @@
-import { mysqlTable, int, varchar, text, tinyint, datetime, primaryKey } from "drizzle-orm/mysql-core";
+import { mysqlTable, int, varchar, text, tinyint, datetime, primaryKey, json } from "drizzle-orm/mysql-core";
 
 // 文章表
 export const posts = mysqlTable("posts", {
@@ -62,6 +62,14 @@ export const comments = mysqlTable("comments", {
   email: varchar("email", { length: 200 }).notNull().default(""),
   content: text("content").notNull(),
   postId: int("post_id"),
+  createdAt: datetime("created_at").notNull(),
+});
+
+// 说说表
+export const moments = mysqlTable("moments", {
+  id: int("id").autoincrement().primaryKey(),
+  content: text("content").notNull(),
+  images: json("images").$type<string[]>(),
   createdAt: datetime("created_at").notNull(),
 });
 

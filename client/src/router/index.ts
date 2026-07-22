@@ -33,6 +33,16 @@ const router = createRouter({
       name: "photos",
       component: () => import("@/pages/PhotoPage.vue"),
     },
+    {
+      path: "/moments",
+      name: "moments",
+      component: () => import("@/pages/MomentsPage.vue"),
+    },
+    {
+      path: "/moments/:id",
+      name: "moment-detail",
+      component: () => import("@/pages/MomentDetailPage.vue"),
+    },
     // 管理后台
     {
       path: "/admin/login",

@@ -68,6 +68,7 @@ onMounted(async () => {
 const menuItems = [
   { label: "首页", to: "/", icon: HomeIcon },
   { label: "文章", to: "/", icon: BookOpenIcon },
+  { label: "说说", to: "/moments", icon: BookOpenIcon },
   { label: "照片", to: "/photos", icon: CameraIcon },
   { label: "关于", to: "/about", icon: InformationCircleIcon },
 ];
@@ -129,6 +130,12 @@ function tagColor(idx: number) {
           </RouterLink>
         </div>
 
+        <RouterLink
+          to="/moments"
+          class="shrink-0 px-2.5 py-1.5 text-gray-600 hover:text-primary-600 transition-colors font-medium rounded-lg hover:bg-primary-50"
+        >
+          说说
+        </RouterLink>
         <RouterLink
           to="/photos"
           class="shrink-0 px-2.5 py-1.5 text-gray-600 hover:text-primary-600 transition-colors font-medium rounded-lg hover:bg-primary-50"
