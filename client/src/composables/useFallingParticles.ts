@@ -18,8 +18,8 @@ interface Petal {
 }
 
 const PETAL_COUNT = 50;
-const MIN_SIZE = 0.35;
-const MAX_SIZE = 0.8;
+const MIN_SIZE = 0.52;
+const MAX_SIZE = 1.2;
 const MIN_SPEED = 30;   // px/s
 const MAX_SPEED = 80;
 const MIN_ROT = 0.3;    // rad/s

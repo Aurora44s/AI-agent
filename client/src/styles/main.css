@@ -8,6 +8,14 @@
     @apply bg-gray-50/80 text-gray-700 antialiased;
   }
 
+  h1 {
+    font-family: 'Playfair Display', serif;
+    background: linear-gradient(135deg, #ffffff 0%, #f8c8d8 40%, #e898b8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
   ::selection {
     @apply bg-primary-200 text-primary-900;
   }

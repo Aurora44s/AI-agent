@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { RouterLink, useRouter } from "vue-router";
-import { fetchTags, fetchSettings, type Tag } from "@/api";
+import { fetchSettings } from "@/api";
 import MobileTagSidebar from "@/components/blog/MobileTagSidebar.vue";
 import { HomeIcon, BookOpenIcon, InformationCircleIcon, CameraIcon } from "@heroicons/vue/20/solid";
 
 const router = useRouter();
 const siteName = ref("遇梦");
 const siteDesc = ref("分享技术与生活的点滴");
-const tagList = ref<Tag[]>([]);
+const avatarUrl = ref("");
 const menuOpen = ref(false);
 const tagsSidebarOpen = ref(false);
 
@@ -56,11 +56,7 @@ onMounted(async () => {
     const settingsRes = await fetchSettings();
     if (settingsRes.data.site_name) siteName.value = settingsRes.data.site_name;
     if (settingsRes.data.site_description) siteDesc.value = settingsRes.data.site_description;
-  } catch {}
-
-  try {
-    const tagsRes = await fetchTags();
-    tagList.value = tagsRes.data;
+    avatarUrl.value = settingsRes.data.avatar || "";
   } catch {}
 });
 
@@ -73,19 +69,6 @@ const menuItems = [
   { label: "关于", to: "/about", icon: InformationCircleIcon },
 ];
 
-// 标签颜色轮换
-function tagColor(idx: number) {
-  const palettes = [
-    "bg-primary-50 text-primary-700 hover:bg-primary-100",
-    "bg-pink-50 text-pink-700 hover:bg-pink-100",
-    "bg-amber-50 text-amber-700 hover:bg-amber-100",
-    "bg-accent-50 text-accent-700 hover:bg-accent-100",
-    "bg-purple-50 text-purple-700 hover:bg-purple-100",
-    "bg-rose-50 text-rose-700 hover:bg-rose-100",
-    "bg-sky-50 text-sky-700 hover:bg-sky-100",
-  ];
-  return palettes[idx % palettes.length];
-}
 </script>
 
 <template>
@@ -114,21 +97,6 @@ function tagColor(idx: number) {
         >
           首页
         </RouterLink>
-
-        <!-- 横向滚动标签 -->
-        <div
-          v-if="tagList.length > 0"
-          class="flex items-center gap-1 overflow-x-auto scrollbar-hide mx-1"
-        >
-          <RouterLink
-            v-for="(tag, idx) in tagList"
-            :key="tag.id"
-            :to="`/tag/${tag.slug}`"
-            :class="['shrink-0 inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-medium rounded-full whitespace-nowrap transition-all duration-200 hover:scale-105', tagColor(idx)]"
-          >
-            {{ tag.name }}
-          </RouterLink>
-        </div>
 
         <RouterLink
           to="/moments"
@@ -191,21 +159,32 @@ function tagColor(idx: number) {
           class="md:hidden fixed top-0 right-0 h-screen w-1/2 z-50 bg-white/40 backdrop-blur-2xl shadow-2xl flex flex-col"
           @click.stop
         >
-          <!-- Logo 区 -->
-          <div class="px-4 py-5 text-center">
-            <!-- Logo 图片 -->
-            <RouterLink to="/" @click="menuOpen = false">
-              <img src="/favicon.svg" :alt="siteName" class="w-16 h-16 mx-auto rounded-full shadow-md mb-4 object-cover" />
-            </RouterLink>
+          <!-- 个人名片区 -->
+          <div class="px-5 pt-12 pb-6 text-center">
+            <!-- 方形头像 -->
+            <div class="w-28 h-28 mx-auto mb-4 rounded-2xl overflow-hidden border-2 border-white/60 shadow-md">
+              <img
+                v-if="avatarUrl"
+                :src="avatarUrl"
+                :alt="siteName"
+                class="w-full h-full object-cover"
+              />
+              <div
+                v-else
+                class="w-full h-full bg-gradient-primary flex items-center justify-center"
+              >
+                <span class="text-4xl text-white drop-shadow">😊</span>
+              </div>
+            </div>
             <!-- 博客名 -->
-            <RouterLink to="/" class="text-base font-bold text-gray-800" @click="menuOpen = false">
+            <RouterLink to="/" class="text-lg font-bold text-gray-800" @click="menuOpen = false">
               {{ siteName }}
             </RouterLink>
             <!-- 标语 -->
-            <p class="text-sm text-primary-500 font-semibold mt-2">{{ siteDesc }}</p>
+            <p class="text-sm text-gray-400 mt-1.5 leading-relaxed">{{ siteDesc }}</p>
           </div>
           <!-- 菜单项 -->
-          <div class="flex-1 flex flex-col items-center justify-center px-4 space-y-4">
+          <div class="flex-1 flex flex-col items-center px-4 pt-6 space-y-3">
             <RouterLink
               v-for="(item, idx) in menuItems"
               :key="item.label"

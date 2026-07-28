@@ -27,7 +27,7 @@ onMounted(async () => {
 <template>
   <div
     class="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-gray-100 p-6
-           hover:shadow-xl transition-all duration-300"
+           hover:shadow-xl hover:-translate-y-0.5 hover:border-primary-200 transition-all duration-300"
   >
     <div v-if="loading" class="flex justify-center gap-6">
       <div class="text-center animate-pulse">

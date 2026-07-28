@@ -29,17 +29,19 @@ const nickname = ref("");
 const inputMsg = ref("");
 const messages = ref<ChatMessage[]>([]);
 const onlineCount = ref(0);
+const unreadCount = ref(0);
 const hasSetNickname = ref(false);
 
 let socket: Socket | null = null;
 const listEl = ref<HTMLDivElement | null>(null);
 
-// 读取已保存的昵称
+// 读取已保存的昵称，有昵称就直接连接（保持长连接接收消息）
 onMounted(() => {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) {
     nickname.value = saved;
     hasSetNickname.value = true;
+    connect();
   }
 });
 
@@ -55,7 +57,13 @@ function connect() {
 
   socket.on("chat message", (msg: ChatMessage) => {
     messages.value.push(msg);
-    scrollToBottom();
+    // 面板关闭时收到的他人消息记为未读
+    if (!isOpen.value && msg.nickname !== nickname.value) {
+      unreadCount.value++;
+    }
+    if (isOpen.value) {
+      scrollToBottom();
+    }
   });
 
   socket.on("online count", (count: number) => {
@@ -102,12 +110,11 @@ async function scrollToBottom() {
   }
 }
 
-// 面板打开时连接
+// 面板开关：打开时清零未读，关闭时保持连接
 watch(isOpen, (val) => {
-  if (val && hasSetNickname.value) {
-    connect();
-  } else if (!val) {
-    disconnect();
+  if (val) {
+    unreadCount.value = 0;
+    if (hasSetNickname.value) connect();
   }
 });
 
@@ -170,7 +177,7 @@ onUnmounted(() => disconnect());
 
         <!-- 消息区域 -->
         <template v-else>
-          <div ref="listEl" class="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-gray-50/50">
+          <div ref="listEl" class="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-gray-50/50 flex flex-col">
             <div
               v-for="(msg, idx) in messages"
               :key="idx"
@@ -224,12 +231,12 @@ onUnmounted(() => disconnect());
     >
       <span v-if="isOpen" class="text-xl">✕</span>
       <ChatBubbleLeftIcon v-else class="w-5 h-5" />
-      <!-- 在线人数角标 -->
+      <!-- 未读消息红点 -->
       <span
-        v-if="!isOpen && onlineCount > 0"
-        class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow"
+        v-if="!isOpen && unreadCount > 0"
+        class="absolute -top-1 -right-1 min-w-[20px] h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow px-1"
       >
-        {{ onlineCount }}
+        {{ unreadCount > 99 ? '99+' : unreadCount }}
       </span>
     </button>
   </div>
