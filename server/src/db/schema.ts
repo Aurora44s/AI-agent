@@ -65,6 +65,13 @@ export const comments = mysqlTable("comments", {
   createdAt: datetime("created_at").notNull(),
 });
 
+// 公告表
+export const announcements = mysqlTable("announcements", {
+  id: int("id").autoincrement().primaryKey(),
+  content: text("content").notNull(),
+  createdAt: datetime("created_at").notNull(),
+});
+
 // 说说表
 export const moments = mysqlTable("moments", {
   id: int("id").autoincrement().primaryKey(),

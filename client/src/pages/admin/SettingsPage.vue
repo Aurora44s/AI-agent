@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { fetchSettings, updateSettings, createTag, deleteTag, fetchTags, fetchSongs, uploadSong, deleteSong, fetchComments, fetchAllComments, deleteComment, fetchPhotos, uploadPhoto, deletePhoto, fetchMoments, createMoment, deleteMoment, type Tag, type Song, type Comment, type Photo, type Moment } from "@/api";
+import { fetchSettings, updateSettings, createTag, deleteTag, fetchTags, fetchSongs, uploadSong, deleteSong, fetchComments, fetchAllComments, deleteComment, fetchPhotos, uploadPhoto, deletePhoto, fetchMoments, createMoment, deleteMoment, fetchAnnouncements, createAnnouncement, deleteAnnouncement, type Tag, type Song, type Comment, type Photo, type Moment } from "@/api";
 import AdminSidebar from "@/components/admin/AdminSidebar.vue";
 
 const siteName = ref("");
@@ -9,6 +9,8 @@ const aboutMe = ref("");
 const github = ref("");
 const chatEnabled = ref(true);
 const guestbookEnabled = ref(true);
+const announcement = ref("");
+const announcementList = ref<{ id: number; content: string; createdAt: string }[]>([]);
 const saved = ref(false);
 
 const tags = ref<Tag[]>([]);
@@ -25,6 +27,8 @@ onMounted(async () => {
     chatEnabled.value = res.data.chat_enabled !== "0";
     guestbookEnabled.value = res.data.guestbook_enabled !== "0";
   } catch {}
+
+  loadAnnouncements();
 
   try {
     const tagsRes = await fetchTags();
@@ -263,6 +267,31 @@ function removeMomentImage(idx: number) {
 }
 
 onMounted(() => { loadMoments(); });
+
+// ----- 公告管理 -----
+async function loadAnnouncements() {
+  try {
+    const res = await fetchAnnouncements();
+    announcementList.value = res.data;
+  } catch {}
+}
+
+async function addAnnouncement() {
+  if (!announcement.value.trim()) { alert("请输入公告内容"); return; }
+  try {
+    await createAnnouncement(announcement.value);
+    announcement.value = "";
+    await loadAnnouncements();
+  } catch { alert("添加失败"); }
+}
+
+async function removeAnnouncement(id: number) {
+  if (!confirm("确定删除？")) return;
+  try {
+    await deleteAnnouncement(id);
+    announcementList.value = announcementList.value.filter(a => a.id !== id);
+  } catch { alert("删除失败"); }
+}
 </script>
 
 <template>
@@ -287,6 +316,27 @@ onMounted(() => { loadMoments(); });
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">GitHub 链接</label>
           <input v-model="github" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <!-- 公告管理 -->
+        <div class="border-t pt-4 mt-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1">📢 公告管理</label>
+          <div class="flex gap-2 mb-3">
+            <textarea
+              v-model="announcement"
+              rows="2"
+              class="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-y"
+              placeholder="输入公告内容..."
+            ></textarea>
+            <button @click="addAnnouncement" class="shrink-0 px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">添加</button>
+          </div>
+          <div v-if="announcementList.length > 0" class="space-y-2 max-h-48 overflow-y-auto">
+            <div v-for="a in announcementList" :key="a.id" class="flex items-start gap-2 p-2 rounded-lg bg-gray-50 border">
+              <p class="flex-1 text-sm text-gray-700">{{ a.content }}</p>
+              <button @click="removeAnnouncement(a.id)" class="text-red-500 hover:text-red-700 text-xs shrink-0 mt-0.5">删除</button>
+            </div>
+          </div>
+          <p v-else class="text-gray-400 text-xs">暂无公告</p>
         </div>
 
         <!-- 功能开关 -->

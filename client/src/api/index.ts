@@ -196,3 +196,20 @@ export const createMoment = (data: { content: string; images: string[] }) =>
 
 export const deleteMoment = (id: number) =>
   api.delete(`/admin/moments/${id}`);
+
+// ============ 公告 API ============
+
+export interface Announcement {
+  id: number;
+  content: string;
+  createdAt: string;
+}
+
+export const fetchAnnouncements = () =>
+  api.get<Announcement[]>("/announcements");
+
+export const createAnnouncement = (content: string) =>
+  api.post("/admin/announcements", { content });
+
+export const deleteAnnouncement = (id: number) =>
+  api.delete(`/admin/announcements/${id}`);

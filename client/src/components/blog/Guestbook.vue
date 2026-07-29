@@ -8,7 +8,7 @@ const loading = ref(true);
 const submitting = ref(false);
 const error = ref("");
 
-const form = ref({ nickname: "", email: "", content: "" });
+const form = ref({ nickname: "", content: "" });
 const nicknameEl = ref<HTMLInputElement | null>(null);
 
 async function loadComments() {
@@ -33,7 +33,7 @@ async function submit() {
   error.value = "";
   submitting.value = true;
   try {
-    await createComment({ nickname: n, email: form.value.email.trim(), content: c });
+    await createComment({ nickname: n, email: "", content: c });
     form.value.nickname = "";
     form.value.content = "";
     await loadComments();
@@ -62,43 +62,6 @@ onMounted(loadComments);
       <div class="h-0.5 flex-1 bg-gray-200"></div>
     </div>
 
-    <!-- 提交表单 -->
-    <div class="bg-white/70 backdrop-blur-md rounded-2xl shadow-md border border-white/60 p-4 md:p-6 mb-6">
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-        <input
-          ref="nicknameEl"
-          v-model="form.nickname"
-          type="text"
-          placeholder="昵称 *"
-          maxlength="50"
-          class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all"
-        />
-        <input
-          v-model="form.email"
-          type="email"
-          placeholder="邮箱（选填）"
-          maxlength="200"
-          class="px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all"
-        />
-      </div>
-      <textarea
-        v-model="form.content"
-        placeholder="说点什么吧..."
-        maxlength="2000"
-        rows="3"
-        class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all resize-none mb-3"
-      ></textarea>
-      <div v-if="error" class="text-xs text-rose-500 mb-2">{{ error }}</div>
-      <button
-        :disabled="submitting"
-        class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-primary text-white text-sm font-medium rounded-xl hover:shadow-glow transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-        @click="submit"
-      >
-        <CloudArrowUpIcon class="w-4 h-4" />
-        <span>{{ submitting ? "提交中..." : "提交留言" }}</span>
-      </button>
-    </div>
-
     <!-- 留言列表 -->
     <div v-if="loading" class="space-y-3">
       <div v-for="i in 3" :key="i" class="bg-white/70 backdrop-blur-md rounded-xl shadow-sm border border-white/60 p-4 animate-pulse">
@@ -119,7 +82,7 @@ onMounted(loadComments);
             {{ comment.nickname.charAt(0).toUpperCase() }}
           </div>
           <span class="text-sm font-semibold text-gray-800">{{ comment.nickname }}</span>
-          <span class="text-xs text-gray-300 ml-auto">{{ fmtTime(comment.createdAt) }}</span>
+          <span class="text-xs text-gray-400 ml-auto">{{ fmtTime(comment.createdAt) }}</span>
         </div>
         <p class="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">{{ comment.content }}</p>
       </div>
@@ -128,6 +91,36 @@ onMounted(loadComments);
     <div v-else class="text-center py-12 text-gray-400">
       <div class="text-3xl mb-2">📭</div>
       <p class="text-sm">还没有留言，来抢沙发吧！</p>
+    </div>
+
+    <!-- 提交表单 -->
+    <div class="bg-white/70 backdrop-blur-md rounded-2xl shadow-md border border-white/60 p-4 md:p-6 mt-6">
+      <div class="mb-3">
+        <input
+          ref="nicknameEl"
+          v-model="form.nickname"
+          type="text"
+          placeholder="昵称 *"
+          maxlength="50"
+          class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all"
+        />
+      </div>
+      <textarea
+        v-model="form.content"
+        placeholder="说点什么吧..."
+        maxlength="2000"
+        rows="3"
+        class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all resize-none mb-3"
+      ></textarea>
+      <div v-if="error" class="text-xs text-rose-500 mb-2">{{ error }}</div>
+      <button
+        :disabled="submitting"
+        class="inline-flex items-center gap-1.5 px-5 py-2.5 bg-gradient-primary text-white text-sm font-medium rounded-xl hover:shadow-glow transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        @click="submit"
+      >
+        <CloudArrowUpIcon class="w-4 h-4" />
+        <span>{{ submitting ? "提交中..." : "提交留言" }}</span>
+      </button>
     </div>
   </section>
 </template>

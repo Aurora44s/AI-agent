@@ -1,19 +1,18 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { fetchPosts, fetchSettings, type Post } from "@/api";
+import { fetchPosts, type Post } from "@/api";
 import PostCard from "@/components/blog/PostCard.vue";
 import SkeletonCard from "@/components/blog/SkeletonCard.vue";
 import RevealWrapper from "@/components/blog/RevealWrapper.vue";
-import Guestbook from "@/components/blog/Guestbook.vue";
 import ProfileCard from "@/components/blog/ProfileCard.vue";
 import StatsPanel from "@/components/blog/StatsPanel.vue";
+import Announcement from "@/components/blog/Announcement.vue";
 import TagCloud from "@/components/blog/TagCloud.vue";
 
 const postList = ref<Post[]>([]);
 const total = ref(0);
 const page = ref(1);
 const loading = ref(true);
-const guestbookEnabled = ref(true);
 
 async function loadPosts() {
   loading.value = true;
@@ -28,13 +27,7 @@ async function loadPosts() {
   }
 }
 
-onMounted(async () => {
-  loadPosts();
-  try {
-    const res = await fetchSettings();
-    guestbookEnabled.value = res.data.guestbook_enabled !== "0";
-  } catch {}
-});
+onMounted(loadPosts);
 
 const totalPages = () => Math.ceil(total.value / 10);
 
@@ -127,9 +120,12 @@ onMounted(() => {
               <ProfileCard />
             </RevealWrapper>
             <RevealWrapper :delay="100">
-              <StatsPanel />
+              <Announcement />
             </RevealWrapper>
             <RevealWrapper :delay="200">
+              <StatsPanel />
+            </RevealWrapper>
+            <RevealWrapper :delay="300">
               <TagCloud />
             </RevealWrapper>
           </div>
@@ -181,9 +177,6 @@ onMounted(() => {
         </div>
       </div>
     </div>
-
-    <!-- 留言板 -->
-    <Guestbook v-if="guestbookEnabled" />
     </div>
   </div>
 </template>
