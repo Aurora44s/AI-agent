@@ -14,11 +14,18 @@ const postList = ref<Post[]>([]);
 const total = ref(0);
 const page = ref(1);
 const loading = ref(true);
+const listTop = ref<HTMLElement | null>(null);
+
+async function goPage(p: number) {
+  page.value = p;
+  loadPosts();
+  listTop.value?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
 
 async function loadPosts() {
   loading.value = true;
   try {
-    const res = await fetchPosts({ page: page.value, limit: 10 });
+    const res = await fetchPosts({ page: page.value, limit: 6 });
     postList.value = res.data.posts;
     total.value = res.data.total;
   } catch {
@@ -30,7 +37,7 @@ async function loadPosts() {
 
 onMounted(loadPosts);
 
-const totalPages = () => Math.ceil(total.value / 10);
+const totalPages = () => Math.ceil(total.value / 6);
 
 // 打字机效果
 const fullTitle = "欢迎来到遇梦";
@@ -136,7 +143,7 @@ onMounted(() => {
         </aside>
 
         <!-- 右侧: 文章列表 -->
-        <div class="flex-1 min-w-0">
+        <div ref="listTop" class="flex-1 min-w-0">
 
 
           <!-- 骨架屏加载 -->
@@ -162,7 +169,7 @@ onMounted(() => {
             <button
               v-for="i in totalPages()"
               :key="i"
-              @click="page = i; loadPosts(); window.scrollTo(0, 0)"
+              @click="goPage(i)"
               :class="[
                 'px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200',
                 page === i
