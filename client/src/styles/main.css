@@ -40,6 +40,19 @@
     @apply bg-gradient-primary bg-clip-text text-transparent;
   }
 
+  /* 樱花粉色文字 */
+  .text-sakura {
+    background: linear-gradient(135deg, #f8c0d0 0%, #f098b8 50%, #e878a0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 樱花粉色图标（SVG stroke） */
+  .text-sakura-icon {
+    color: #f098b8;
+  }
+
   /* 卡片顶部渐变装饰条 */
   .card-accent {
     @apply relative overflow-hidden;
@@ -118,12 +131,12 @@
 
 /* ===== 海浪动画效果 ===== */
 .wave-container {
-  height: 80px;
+  height: 100px;
 }
 
 @media (min-width: 768px) {
   .wave-container {
-    height: 100px;
+    height: 140px;
   }
 }
 

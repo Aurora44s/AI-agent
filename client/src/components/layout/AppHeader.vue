@@ -80,7 +80,7 @@ const menuItems = [
         class="md:hidden p-1.5 rounded-lg hover:bg-gray-100 transition-colors shrink-0"
         @click="searchOpen = true"
       >
-        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-6 h-6 text-sakura-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
       </button>
@@ -91,35 +91,35 @@ const menuItems = [
       </RouterLink>
 
       <!-- 桌面端导航：首页 + 横向标签pill + 关于 -->
-      <div class="hidden md:flex items-center gap-1.5 text-sm flex-1 min-w-0 justify-center">
+      <div class="hidden md:flex items-center gap-1.5 text-base flex-1 min-w-0 justify-center">
         <RouterLink
           to="/"
-          class="shrink-0 px-2.5 py-1.5 text-gray-600 hover:text-primary-600 transition-colors font-medium rounded-lg hover:bg-primary-50"
+          class="shrink-0 px-2.5 py-1.5 text-sakura font-semibold rounded-lg hover:bg-pink-50 transition-all"
         >
           首页
         </RouterLink>
 
         <RouterLink
           to="/moments"
-          class="shrink-0 px-2.5 py-1.5 text-gray-600 hover:text-primary-600 transition-colors font-medium rounded-lg hover:bg-primary-50"
+          class="shrink-0 px-2.5 py-1.5 text-sakura font-semibold rounded-lg hover:bg-pink-50 transition-all"
         >
           说说
         </RouterLink>
         <RouterLink
           to="/guestbook"
-          class="shrink-0 px-2.5 py-1.5 text-gray-600 hover:text-primary-600 transition-colors font-medium rounded-lg hover:bg-primary-50"
+          class="shrink-0 px-2.5 py-1.5 text-sakura font-semibold rounded-lg hover:bg-pink-50 transition-all"
         >
           留言
         </RouterLink>
         <RouterLink
           to="/photos"
-          class="shrink-0 px-2.5 py-1.5 text-gray-600 hover:text-primary-600 transition-colors font-medium rounded-lg hover:bg-primary-50"
+          class="shrink-0 px-2.5 py-1.5 text-sakura font-semibold rounded-lg hover:bg-pink-50 transition-all"
         >
           照片
         </RouterLink>
         <RouterLink
           to="/about"
-          class="shrink-0 px-2.5 py-1.5 text-gray-600 hover:text-primary-600 transition-colors font-medium rounded-lg hover:bg-primary-50"
+          class="shrink-0 px-2.5 py-1.5 text-sakura font-semibold rounded-lg hover:bg-pink-50 transition-all"
         >
           关于
         </RouterLink>
@@ -131,7 +131,7 @@ const menuItems = [
           class="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
           @click="searchOpen = true"
         >
-          <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6 text-sakura-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </button>
@@ -142,7 +142,7 @@ const menuItems = [
         class="md:hidden p-1.5 rounded-lg hover:bg-gray-100 transition-colors shrink-0"
         @click="menuOpen = !menuOpen"
       >
-        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-6 h-6 text-sakura-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path v-if="!menuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
           <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>

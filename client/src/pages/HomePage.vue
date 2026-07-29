@@ -112,7 +112,7 @@ onMounted(() => {
         </div>
       </div>
 
-    <div class="max-w-5xl mx-auto px-3 sm:px-4 lg:px-6 pt-8 md:pt-12 pb-8 md:pb-12">
+    <div class="max-w-5xl mx-auto px-3 sm:px-4 lg:px-6 pt-32 md:pt-40 pb-8 md:pb-12">
       <div class="flex gap-6 lg:gap-8">
         <!-- 左侧: 个人名片 + 数据看板 + 标签云 -->
         <aside class="hidden lg:block w-52 shrink-0 self-start">
@@ -137,12 +137,7 @@ onMounted(() => {
 
         <!-- 右侧: 文章列表 -->
         <div class="flex-1 min-w-0">
-          <!-- 区域标题 -->
-          <div class="flex items-center gap-3 mb-6 md:mb-8">
-            <div class="h-0.5 flex-1 bg-gray-200"></div>
-            <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider whitespace-nowrap">最新文章</h2>
-            <div class="h-0.5 flex-1 bg-gray-200"></div>
-          </div>
+
 
           <!-- 骨架屏加载 -->
           <div v-if="loading" class="grid gap-4 md:gap-6">
