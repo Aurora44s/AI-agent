@@ -7,6 +7,7 @@ import RevealWrapper from "@/components/blog/RevealWrapper.vue";
 import ProfileCard from "@/components/blog/ProfileCard.vue";
 import StatsPanel from "@/components/blog/StatsPanel.vue";
 import Announcement from "@/components/blog/Announcement.vue";
+import CalendarCard from "@/components/blog/CalendarCard.vue";
 import TagCloud from "@/components/blog/TagCloud.vue";
 
 const postList = ref<Post[]>([]);
@@ -121,6 +122,9 @@ onMounted(() => {
             </RevealWrapper>
             <RevealWrapper :delay="100">
               <Announcement />
+            </RevealWrapper>
+            <RevealWrapper :delay="150">
+              <CalendarCard />
             </RevealWrapper>
             <RevealWrapper :delay="200">
               <StatsPanel />
