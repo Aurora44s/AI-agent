@@ -7,6 +7,8 @@ const siteName = ref("");
 const siteDescription = ref("");
 const aboutMe = ref("");
 const github = ref("");
+const chatEnabled = ref(true);
+const guestbookEnabled = ref(true);
 const saved = ref(false);
 
 const tags = ref<Tag[]>([]);
@@ -20,6 +22,8 @@ onMounted(async () => {
     siteDescription.value = res.data.site_description || "";
     aboutMe.value = res.data.about_me || "";
     github.value = res.data.github || "";
+    chatEnabled.value = res.data.chat_enabled !== "0";
+    guestbookEnabled.value = res.data.guestbook_enabled !== "0";
   } catch {}
 
   try {
@@ -39,6 +43,8 @@ async function save() {
       site_description: siteDescription.value,
       about_me: aboutMe.value,
       github: github.value,
+      chat_enabled: chatEnabled.value ? "1" : "0",
+      guestbook_enabled: guestbookEnabled.value ? "1" : "0",
     });
     saved.value = true;
     setTimeout(() => (saved.value = false), 2000);
@@ -281,6 +287,19 @@ onMounted(() => { loadMoments(); });
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">GitHub 链接</label>
           <input v-model="github" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+        </div>
+
+        <!-- 功能开关 -->
+        <div class="border-t pt-4 mt-2 space-y-3">
+          <p class="text-sm font-medium text-gray-700">功能开关</p>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" v-model="chatEnabled" class="w-4 h-4 rounded accent-blue-600" />
+            <span class="text-sm text-gray-600">启用聊天室</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" v-model="guestbookEnabled" class="w-4 h-4 rounded accent-blue-600" />
+            <span class="text-sm text-gray-600">启用留言板</span>
+          </label>
         </div>
 
         <button @click="save" class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors">

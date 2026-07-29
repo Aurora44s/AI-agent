@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { fetchPosts, type Post } from "@/api";
+import { fetchPosts, fetchSettings, type Post } from "@/api";
 import PostCard from "@/components/blog/PostCard.vue";
 import SkeletonCard from "@/components/blog/SkeletonCard.vue";
 import RevealWrapper from "@/components/blog/RevealWrapper.vue";
@@ -13,6 +13,7 @@ const postList = ref<Post[]>([]);
 const total = ref(0);
 const page = ref(1);
 const loading = ref(true);
+const guestbookEnabled = ref(true);
 
 async function loadPosts() {
   loading.value = true;
@@ -27,7 +28,13 @@ async function loadPosts() {
   }
 }
 
-onMounted(loadPosts);
+onMounted(async () => {
+  loadPosts();
+  try {
+    const res = await fetchSettings();
+    guestbookEnabled.value = res.data.guestbook_enabled !== "0";
+  } catch {}
+});
 
 const totalPages = () => Math.ceil(total.value / 10);
 
@@ -176,7 +183,7 @@ onMounted(() => {
     </div>
 
     <!-- 留言板 -->
-    <Guestbook />
+    <Guestbook v-if="guestbookEnabled" />
     </div>
   </div>
 </template>

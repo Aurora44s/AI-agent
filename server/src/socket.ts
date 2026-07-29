@@ -1,10 +1,19 @@
 import { Server as HttpServer } from "http";
-import { Server } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { db } from "./db";
 import { messages } from "./db/schema";
 import { desc, eq } from "drizzle-orm";
+import { filterContent, FILTER_ERROR_MSG } from "./utils/sensitiveFilter";
+import { checkRateLimit } from "./utils/rateLimiter";
 
 let io: Server | null = null;
+
+function getSocketIP(socket: Socket): string {
+  const forwarded = socket.handshake.headers["x-forwarded-for"];
+  if (typeof forwarded === "string") return forwarded.split(",")[0].trim();
+  if (Array.isArray(forwarded)) return forwarded[0]?.split(",")[0]?.trim() || "unknown";
+  return socket.handshake.address || "unknown";
+}
 
 export function initSocket(httpServer: HttpServer) {
   io = new Server(httpServer, {
@@ -34,13 +43,31 @@ export function initSocket(httpServer: HttpServer) {
       const { nickname, content } = data;
       if (!nickname?.trim() || !content?.trim()) return;
 
+      const ip = getSocketIP(socket);
+
+      // 速率限制
+      const limit = checkRateLimit(`chat:${ip}`);
+      if (!limit.allowed) {
+        socket.emit("chat error", `操作太频繁，请${limit.retryAfter}秒后再试`);
+        return;
+      }
+
+      // 敏感词过滤
+      const trimContent = content.trim();
+      const filter = filterContent(trimContent, { ip, nickname: nickname.trim() });
+      if (!filter.ok) {
+        socket.emit("chat error", FILTER_ERROR_MSG);
+        return;
+      }
+
       const now = new Date();
-      const msg = { nickname: nickname.trim(), content: content.trim(), createdAt: now };
+      const msg = { nickname: nickname.trim(), content: trimContent, createdAt: now };
 
       try {
         await db.insert(messages).values(msg);
       } catch (err) {
         console.error("保存消息失败:", err);
+        return;
       }
 
       // 广播给所有客户端（包括发送者）

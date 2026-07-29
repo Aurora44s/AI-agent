@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { ref, computed, watch, onUnmounted } from "vue";
+import { ref, computed, watch, onUnmounted, onMounted } from "vue";
 import AppHeader from "./components/layout/AppHeader.vue";
 import AppFooter from "./components/layout/AppFooter.vue";
 import ChatWidget from "@/components/chat/ChatWidget.vue";
 import MusicPlayer from "@/components/music/MusicPlayer.vue";
 import { useClickParticles } from "@/composables/useClickParticles";
 import { useFallingParticles } from "@/composables/useFallingParticles";
+import { fetchSettings } from "@/api";
 
 const route = useRoute();
 const isAdmin = computed(() => route.path.startsWith("/admin"));
@@ -28,6 +29,16 @@ watch(isAdmin, (admin) => {
 onUnmounted(() => {
   particlesCleanup?.();
   fallingCleanup?.();
+});
+
+// 功能开关
+const chatEnabled = ref(true);
+
+onMounted(async () => {
+  try {
+    const res = await fetchSettings();
+    chatEnabled.value = res.data.chat_enabled !== "0";
+  } catch {}
 });
 
 // 聊天室和音乐播放器互斥
@@ -59,7 +70,7 @@ function onMusicToggle(val: boolean) {
       </router-view>
     </main>
     <AppFooter v-if="!isAdmin" />
-    <ChatWidget v-if="!isAdmin" :model-value="chatOpen" @update:model-value="onChatToggle" />
+    <ChatWidget v-if="!isAdmin && chatEnabled" :model-value="chatOpen" @update:model-value="onChatToggle" />
     <MusicPlayer v-if="!isAdmin" :model-value="musicOpen" @update:model-value="onMusicToggle" @close-chat="chatOpen = false" />
   </div>
 </template>
