@@ -358,7 +358,7 @@ function fmtTime(t: number) {
               <!-- 关闭按钮 -->
               <div class="flex items-center justify-between px-3 py-1.5 border-b border-white/30">
                 <span class="text-xs font-semibold text-gray-500">歌单</span>
-                <button class="p-0.5 rounded hover:bg-white/50 transition-colors" @click="showPlaylist = false">
+                <button class="p-0.5 rounded hover:bg-white/50 transition-colors" @click.stop="showPlaylist = false">
                   <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -369,7 +369,7 @@ function fmtTime(t: number) {
                 v-for="(song, idx) in songList"
                 :key="song.id"
                 :class="['w-full text-left px-3 py-1.5 text-xs truncate hover:bg-white/40 transition-colors', idx === currentIdx ? 'text-primary-600 font-bold' : 'text-gray-800']"
-                @click="selectSong(idx)"
+                @click.stop="selectSong(idx)"
               >
                 {{ song.title }} - {{ song.artist }}
               </button>

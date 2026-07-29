@@ -25,7 +25,7 @@ function goAbout() {
 <template>
   <article
     class="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-gray-100 p-7 pb-8
-           hover:shadow-xl hover:border-primary-200 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
+           hover:shadow-glow hover:border-primary-300 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
     @click="goAbout"
   >
     <!-- 方形头像 -->

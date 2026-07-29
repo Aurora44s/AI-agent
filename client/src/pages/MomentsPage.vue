@@ -1,36 +1,50 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { useRouter } from "vue-router";
 import { fetchMoments, type Moment } from "@/api";
-import RevealWrapper from "@/components/blog/RevealWrapper.vue";
 
 const router = useRouter();
 const moments = ref<Moment[]>([]);
 const total = ref(0);
 const page = ref(1);
-const limit = 10;
+const limit = 5;
 const loading = ref(true);
+const loadingMore = ref(false);
 const search = ref("");
 
-async function loadMoments() {
-  loading.value = true;
+const hasMore = computed(() => moments.value.length < total.value);
+
+async function loadMoments(reset = false) {
+  if (reset) {
+    page.value = 1;
+    loading.value = true;
+  } else {
+    loadingMore.value = true;
+  }
   try {
-    const res = await fetchMoments({ page: page.value, limit, search: search.value || undefined });
-    moments.value = res.data.moments;
+    const res = await fetchMoments({ page: reset ? 1 : page.value, limit, search: search.value || undefined });
+    if (reset) {
+      moments.value = res.data.moments;
+    } else {
+      moments.value.push(...res.data.moments);
+    }
     total.value = res.data.total;
   } catch {
     console.error("加载说说失败");
   } finally {
     loading.value = false;
+    loadingMore.value = false;
   }
 }
 
-function onSearch() {
-  page.value = 1;
-  loadMoments();
+function loadMore() {
+  page.value++;
+  loadMoments(false);
 }
 
-const totalPages = () => Math.ceil(total.value / limit);
+function onSearch() {
+  loadMoments(true);
+}
 
 function goDetail(id: number) {
   router.push(`/moments/${id}`);
@@ -50,7 +64,7 @@ function fmtDate(d: string) {
   return d.slice(0, 10);
 }
 
-onMounted(loadMoments);
+onMounted(() => loadMoments(true));
 </script>
 
 <template>
@@ -58,7 +72,7 @@ onMounted(loadMoments);
     <div class="absolute inset-0 bg-white/10 backdrop-blur-xl"></div>
     <div class="relative max-w-2xl mx-auto px-3 sm:px-4 lg:px-6 pt-20 md:pt-24 pb-8 md:pb-12">
       <!-- 标题和搜索 -->
-      <div class="flex items-center justify-between mb-6 md:mb-8">
+      <div class="flex items-center justify-between mb-10">
         <h1 class="text-xl md:text-2xl font-bold text-gray-900">💬 说说</h1>
         <div class="flex items-center gap-2">
           <input
@@ -77,75 +91,68 @@ onMounted(loadMoments);
         </div>
       </div>
 
-      <!-- 骨架屏 -->
-      <div v-if="loading" class="space-y-4">
-        <div v-for="i in 3" :key="i" class="bg-white/70 backdrop-blur-md rounded-2xl shadow-sm border border-white/60 p-4 md:p-6 animate-pulse">
-          <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-          <div class="h-4 bg-gray-200 rounded w-1/2 mb-3"></div>
-          <div class="flex gap-2">
-            <div class="w-20 h-20 bg-gray-200 rounded-lg"></div>
-            <div class="w-20 h-20 bg-gray-200 rounded-lg"></div>
+      <!-- 时间线 -->
+      <div v-if="moments.length > 0" class="relative">
+        <!-- 中间竖线 -->
+        <div class="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-rose-300 via-pink-300 to-rose-300 -translate-x-1/2"></div>
+
+        <div v-for="(m, idx) in moments" :key="m.id" class="relative mb-8 timeline-item" :style="{ animationDelay: `${idx * 1}s` }">
+          <!-- 时间线节点 -->
+          <div class="absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-rose-300 shadow-sm z-10"
+               :style="{ top: '24px' }"></div>
+
+          <!-- 卡片 - 奇数左边，偶数右边 -->
+          <div :class="['flex', idx % 2 === 0 ? 'justify-start pr-[calc(50%+1rem)]' : 'justify-end pl-[calc(50%+1rem)]']">
+            <article
+              class="w-full bg-white/70 backdrop-blur-md rounded-2xl shadow-sm border border-white/60 p-3 md:p-4
+                     hover:shadow-md hover:border-rose-200 transition-all duration-300 cursor-pointer"
+              @click="goDetail(m.id)"
+            >
+              <div class="flex gap-3 items-center">
+                <!-- 图片缩略图 -->
+                <div v-if="m.images && m.images.length > 0" class="flex gap-1.5 shrink-0">
+                  <img
+                    v-for="(img, i) in m.images.slice(0, 2)"
+                    :key="i"
+                    :src="img"
+                    class="w-14 h-14 md:w-16 md:h-16 object-cover rounded-xl border border-white/40"
+                    @click.stop
+                  />
+                  <div
+                    v-if="m.images.length > 2"
+                    class="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-gray-100 flex items-center justify-center text-xs text-gray-400 shrink-0"
+                  >
+                    +{{ m.images.length - 2 }}
+                  </div>
+                </div>
+                <!-- 文字内容 -->
+                <div class="flex-1 min-w-0">
+                  <p class="text-gray-700 text-base md:text-lg leading-relaxed whitespace-pre-wrap line-clamp-2">
+                    {{ m.content }}
+                  </p>
+                  <time class="text-xs text-rose-400 mt-1.5 block">{{ fmtDate(m.createdAt) }}</time>
+                </div>
+              </div>
+            </article>
           </div>
         </div>
       </div>
 
-      <!-- 说说列表 -->
-      <div v-else-if="moments.length > 0" class="space-y-4">
-        <RevealWrapper v-for="(m, idx) in moments" :key="m.id" :delay="idx * 60">
-          <article
-            class="bg-white/70 backdrop-blur-md rounded-2xl shadow-sm border border-white/60 p-4 md:p-6
-                   hover:shadow-md hover:border-primary-200 transition-all duration-300 cursor-pointer"
-            @click="goDetail(m.id)"
-          >
-            <!-- 文字内容 -->
-            <p class="text-gray-800 text-sm md:text-base leading-relaxed mb-3 whitespace-pre-wrap line-clamp-4">
-              {{ m.content }}
-            </p>
-            <!-- 图片缩略图 -->
-            <div v-if="m.images && m.images.length > 0" class="flex gap-2 flex-wrap mb-3">
-              <img
-                v-for="(img, i) in m.images.slice(0, 4)"
-                :key="i"
-                :src="img"
-                class="w-20 h-20 object-cover rounded-lg border border-white/40"
-                @click.stop
-              />
-              <div
-                v-if="m.images.length > 4"
-                class="w-20 h-20 rounded-lg bg-gray-100 flex items-center justify-center text-sm text-gray-400"
-              >
-                +{{ m.images.length - 4 }}
-              </div>
-            </div>
-            <!-- 时间 -->
-            <div class="flex items-center justify-between">
-              <time class="text-xs text-gray-400">{{ fmtDate(m.createdAt) }}</time>
-              <span class="text-xs text-primary-500 hover:text-primary-600">查看详情 →</span>
-            </div>
-          </article>
-        </RevealWrapper>
-      </div>
-
       <!-- 空状态 -->
-      <div v-else class="text-center py-16">
+      <div v-else-if="!loading" class="text-center py-16">
         <div class="text-4xl mb-3">💬</div>
         <p class="text-gray-400">还没有说说，去后台发布第一条吧！</p>
       </div>
 
-      <!-- 分页 -->
-      <div v-if="totalPages() > 1" class="flex justify-center flex-wrap gap-2 mt-8">
+      <!-- 加载更多 -->
+      <div v-if="hasMore" class="text-center mt-6">
         <button
-          v-for="i in totalPages()"
-          :key="i"
-          @click="page = i; loadMoments(); window.scrollTo(0, 0)"
-          :class="[
-            'px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200',
-            page === i
-              ? 'bg-gradient-primary text-white shadow-colored-sm'
-              : 'bg-white/70 border border-white/60 text-gray-600 hover:border-primary-300 hover:text-primary-600',
-          ]"
+          :disabled="loadingMore"
+          class="px-6 py-2.5 bg-white/70 backdrop-blur-md border border-white/60 rounded-xl text-sm text-primary-500 font-medium
+                 hover:shadow-glow hover:border-primary-300 transition-all duration-300 disabled:opacity-50"
+          @click="loadMore"
         >
-          {{ i }}
+          {{ loadingMore ? '加载中...' : '加载更多' }}
         </button>
       </div>
     </div>

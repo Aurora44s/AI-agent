@@ -54,7 +54,7 @@ const upcomingHolidays = computed(() => {
 <template>
   <div
     class="bg-white/80 backdrop-blur-md rounded-2xl shadow-md border-2 border-white/80 p-7
-           hover:shadow-lg transition-all duration-300 cursor-pointer select-none"
+           hover:shadow-glow hover:border-primary-300 hover:-translate-y-1 transition-all duration-300 cursor-pointer select-none"
     @click="expanded = !expanded"
   >
     <!-- 头部：日期 + 箭头 -->
