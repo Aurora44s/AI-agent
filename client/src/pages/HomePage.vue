@@ -112,7 +112,7 @@ onMounted(() => {
         </div>
       </div>
 
-    <div class="max-w-5xl mx-auto px-3 sm:px-4 lg:px-6 pt-32 md:pt-40 pb-8 md:pb-12">
+    <div class="max-w-5xl mx-auto px-3 sm:px-4 lg:px-6 pt-52 md:pt-48 pb-8 md:pb-12">
       <div class="flex gap-6 lg:gap-8">
         <!-- 左侧: 个人名片 + 数据看板 + 标签云 -->
         <aside class="hidden lg:block w-52 shrink-0 self-start">
