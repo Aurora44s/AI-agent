@@ -9,6 +9,7 @@ const aboutMe = ref("");
 const github = ref("");
 const chatEnabled = ref(true);
 const guestbookEnabled = ref(true);
+const commentEnabled = ref(true);
 const announcement = ref("");
 const announcementList = ref<{ id: number; content: string; createdAt: string }[]>([]);
 const saved = ref(false);
@@ -26,6 +27,7 @@ onMounted(async () => {
     github.value = res.data.github || "";
     chatEnabled.value = res.data.chat_enabled !== "0";
     guestbookEnabled.value = res.data.guestbook_enabled !== "0";
+    commentEnabled.value = res.data.comment_enabled !== "0";
   } catch {}
 
   loadAnnouncements();
@@ -49,6 +51,7 @@ async function save() {
       github: github.value,
       chat_enabled: chatEnabled.value ? "1" : "0",
       guestbook_enabled: guestbookEnabled.value ? "1" : "0",
+      comment_enabled: commentEnabled.value ? "1" : "0",
     });
     saved.value = true;
     setTimeout(() => (saved.value = false), 2000);
@@ -349,6 +352,10 @@ async function removeAnnouncement(id: number) {
           <label class="flex items-center gap-3 cursor-pointer">
             <input type="checkbox" v-model="guestbookEnabled" class="w-4 h-4 rounded accent-blue-600" />
             <span class="text-sm text-gray-600">启用留言板</span>
+          </label>
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" v-model="commentEnabled" class="w-4 h-4 rounded accent-blue-600" />
+            <span class="text-sm text-gray-600">启用文章评论</span>
           </label>
         </div>
 

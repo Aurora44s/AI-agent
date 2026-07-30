@@ -36,7 +36,7 @@ const colorClasses = (id: number) => {
     class="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg border border-gray-100 p-4
            hover:shadow-xl hover:-translate-y-0.5 hover:border-primary-200 transition-all duration-300"
   >
-    <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+    <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">
       标签
       <span v-if="!loading" class="text-gray-300 font-normal ml-1">· {{ tags.length }}</span>
     </h3>
@@ -56,7 +56,7 @@ const colorClasses = (id: number) => {
         :key="tag.id"
         :to="`/tag/${tag.slug}`"
         :class="[
-          'inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-medium rounded-full transition-all duration-200',
+          'inline-flex items-center gap-1 px-3 py-1 text-sm font-medium rounded-full transition-all duration-200',
           colorClasses(tag.id),
         ]"
       >

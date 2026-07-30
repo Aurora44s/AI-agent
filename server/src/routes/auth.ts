@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { signToken } from "../utils/jwt";
+import { checkRateLimit, getClientIP } from "../utils/rateLimiter";
 
 const router = Router();
 
@@ -16,15 +17,19 @@ router.post("/login", async (req: Request, res: Response) => {
     return;
   }
 
+  // 速率限制：登录接口更严格
+  const ip = getClientIP(req);
+  const limit = checkRateLimit(`login:${ip}`);
+  if (!limit.allowed) {
+    console.warn(`[安全] 登录暴力破解嫌疑 | IP=${ip} | 用户名=${username}`);
+    res.status(429).json({ error: "登录尝试次数过多，请稍后再试" });
+    return;
+  }
+
   if (username !== ADMIN_USERNAME) {
     res.status(401).json({ error: "用户名或密码错误" });
     return;
   }
-
-  // 如果用 bcrypt hash 存储密码，这里改为比对 hash
-  const isPasswordValid =
-    password === ADMIN_PASSWORD ||
-    (await bcrypt.compare(password, await bcrypt.hash(ADMIN_PASSWORD, 10)).catch(() => false));
 
   // 简化处理：直接比对明文（生产环境应该存 bcrypt hash）
   const isMatch = password === ADMIN_PASSWORD;

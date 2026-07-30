@@ -37,6 +37,7 @@ const giscusConfig = computed(() => ({
 }));
 
 const showGiscus = computed(() => !!giscusConfig.value.repo);
+const commentEnabled = computed(() => siteSettings.value.comment_enabled !== "0");
 
 onMounted(async () => {
   try {
@@ -134,8 +135,14 @@ useSEO(() => post.value);
       <!-- 评论区 -->
       <div class="mt-10">
         <div class="h-1 bg-gradient-primary rounded-full mb-8"></div>
-        <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-6">💬 评论</h2>
+        <h2 class="text-lg md:text-xl font-bold text-gray-900 mb-6">评论</h2>
 
+        <!-- 评论未开启 -->
+        <div v-if="!commentEnabled" class="text-center py-10">
+          <p class="text-gray-400 text-sm">评论功能正在开发中，敬请期待</p>
+        </div>
+
+        <template v-else>
         <!-- Giscus -->
         <div v-if="showGiscus" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 mb-6">
           <GiscusComment v-bind="giscusConfig" />
@@ -173,6 +180,7 @@ useSEO(() => post.value);
             <p class="text-sm text-gray-600 leading-relaxed">{{ c.content }}</p>
           </div>
         </div>
+        </template>
       </div>
     </div>
 
