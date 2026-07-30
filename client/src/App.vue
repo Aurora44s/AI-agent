@@ -62,7 +62,7 @@ function onMusicToggle(val: boolean) {
     <main class="flex-1">
       <router-view v-slot="{ Component, route: r }">
         <transition
-          :name="r.meta.transition || 'fade-slide'"
+          :name="(r.meta as any).transition || 'fade-slide'"
           mode="out-in"
         >
           <component :is="Component" :key="r.path" />

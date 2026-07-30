@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { db } from "../db";
 import { moments } from "../db/schema";
-import { desc, like, sql } from "drizzle-orm";
+import { desc, sql } from "drizzle-orm";
 import { authMiddleware } from "../middleware/auth";
 
 const router = Router();
@@ -15,13 +15,9 @@ router.get("/", async (req: Request, res: Response) => {
     const limit = parseInt(req.query.limit as string) || 10;
     const search = req.query.search as string | undefined;
 
-    let query = db.select().from(moments);
-
-    if (search) {
-      query = query.where(like(moments.content, `%${search}%`));
-    }
-
-    const all = await query.orderBy(desc(moments.createdAt));
+    const all = search
+      ? await db.select().from(moments).where(sql`${moments.content} LIKE ${`%${search}%`}`).orderBy(desc(moments.createdAt))
+      : await db.select().from(moments).orderBy(desc(moments.createdAt));
     const total = all.length;
     const start = (page - 1) * limit;
     const data = all.slice(start, start + limit);
