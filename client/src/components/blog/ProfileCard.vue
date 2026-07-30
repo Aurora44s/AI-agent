@@ -4,15 +4,14 @@ import { useRouter } from "vue-router";
 import { fetchSettings } from "@/api";
 
 const router = useRouter();
-const siteName = ref("遇梦");
-const siteDesc = ref("分享技术与生活的点滴");
+const siteName = ref("Suyuxi"); // 个人名片固定名称
+const siteDesc = ref("千里之行，始于足下");
 const avatarUrl = ref("");
 
 onMounted(async () => {
   try {
     const res = await fetchSettings();
-    siteName.value = res.data.site_name || "遇梦";
-    siteDesc.value = res.data.site_description || "分享技术与生活的点滴";
+    siteDesc.value = res.data.site_description || "千里之行，始于足下";
     avatarUrl.value = res.data.avatar || "";
   } catch {}
 });
@@ -36,30 +35,20 @@ function goAbout() {
         :alt="siteName"
         class="w-full h-full object-cover"
       />
-      <div
+      <img
         v-else
-        class="w-full h-full bg-gradient-primary flex items-center justify-center"
-      >
-        <span class="text-5xl text-white drop-shadow">😊</span>
-      </div>
+        src="/E6B32D5F013AE2F162FD8AAD53308339.jpg"
+        :alt="siteName"
+        class="w-full h-full object-cover"
+      />
     </div>
 
     <!-- 名称 -->
-    <h3 class="text-lg font-bold text-gray-900 text-center mb-3">{{ siteName }}</h3>
-
-    <!-- 分割线 -->
-    <div class="w-12 h-0.5 bg-gradient-primary mx-auto mb-4 rounded-full"></div>
+    <h3 class="text-2xl font-bold text-gradient text-center mb-3">{{ siteName }}</h3>
 
     <!-- 简介 -->
-    <p class="text-sm text-gray-500 text-center leading-relaxed line-clamp-4 mb-5">
+    <p class="text-sm text-gray-500 text-center leading-relaxed line-clamp-4">
       {{ siteDesc }}
     </p>
-
-    <!-- 底部装饰 -->
-    <div class="flex justify-center gap-1.5">
-      <span class="w-1.5 h-1.5 rounded-full bg-primary-300"></span>
-      <span class="w-1.5 h-1.5 rounded-full bg-primary-400"></span>
-      <span class="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
-    </div>
   </article>
 </template>

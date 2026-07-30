@@ -40,7 +40,7 @@ onMounted(loadPosts);
 const totalPages = () => Math.ceil(total.value / 6);
 
 // 打字机效果
-const fullTitle = "欢迎来到遇梦";
+const fullTitle = "欢迎来到我的blog";
 const displayText = ref("");
 const cursorShow = ref(true);
 
@@ -144,7 +144,6 @@ onMounted(() => {
 
         <!-- 右侧: 文章列表 -->
         <div ref="listTop" class="flex-1 min-w-0">
-
 
           <!-- 骨架屏加载 -->
           <div v-if="loading" class="grid gap-4 md:gap-6">

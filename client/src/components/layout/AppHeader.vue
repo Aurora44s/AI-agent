@@ -7,7 +7,7 @@ import { HomeIcon, BookOpenIcon, InformationCircleIcon, CameraIcon } from "@hero
 
 const router = useRouter();
 const siteName = ref("遇梦");
-const siteDesc = ref("分享技术与生活的点滴");
+const siteDesc = ref("千里之行，始于足下");
 const avatarUrl = ref("");
 const menuOpen = ref(false);
 const tagsSidebarOpen = ref(false);
@@ -176,16 +176,16 @@ const menuItems = [
                 :alt="siteName"
                 class="w-full h-full object-cover"
               />
-              <div
+              <img
                 v-else
-                class="w-full h-full bg-gradient-primary flex items-center justify-center"
-              >
-                <span class="text-4xl text-white drop-shadow">😊</span>
-              </div>
+                src="/E6B32D5F013AE2F162FD8AAD53308339.jpg"
+                :alt="siteName"
+                class="w-full h-full object-cover"
+              />
             </div>
             <!-- 博客名 -->
             <RouterLink to="/" class="text-lg font-bold text-gray-800" @click="menuOpen = false">
-              {{ siteName }}
+              Suyuxi
             </RouterLink>
             <!-- 标语 -->
             <p class="text-sm text-gray-400 mt-1.5 leading-relaxed">{{ siteDesc }}</p>
