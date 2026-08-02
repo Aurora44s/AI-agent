@@ -71,9 +71,10 @@ onMounted(() => loadMoments(true));
   <div class="min-h-screen relative bg-fixed bg-cover bg-center" style="background-image: url('/c25bdb2a33bf1021a05d4317d3fec6f6_720.jpg')">
     <div class="absolute inset-0 bg-white/10 backdrop-blur-xl"></div>
     <div class="relative max-w-2xl mx-auto px-3 sm:px-4 lg:px-6 pt-20 md:pt-24 pb-8 md:pb-12">
-      <!-- 标题和搜索 -->
-      <div class="flex items-center justify-between mb-10">
-        <h1 class="text-xl md:text-2xl font-bold text-gray-900">💬 说说</h1>
+      <!-- 标题 -->
+      <h1 class="text-center text-gray-700 text-lg mb-4">说说</h1>
+      <!-- 搜索 -->
+      <div class="flex justify-center mb-10">
         <div class="flex items-center gap-2">
           <input
             v-model="search"

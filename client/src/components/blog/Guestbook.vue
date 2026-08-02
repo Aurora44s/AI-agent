@@ -56,11 +56,7 @@ onMounted(loadComments);
 <template>
   <section class="max-w-3xl mx-auto px-3 sm:px-4 lg:px-6 py-8 md:py-12">
     <!-- 标题 -->
-    <div class="flex items-center gap-3 mb-8">
-      <div class="h-0.5 flex-1 bg-gray-200"></div>
-      <h2 class="text-base font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">💬 留言板</h2>
-      <div class="h-0.5 flex-1 bg-gray-200"></div>
-    </div>
+    <h2 class="text-center text-gray-700 text-lg mb-8">留言板</h2>
 
     <!-- 留言列表 -->
     <div v-if="loading" class="space-y-3">

@@ -163,7 +163,7 @@ const menuItems = [
       <transition name="menu-slide">
         <div
           v-if="menuOpen"
-          class="md:hidden fixed top-0 right-0 h-screen w-1/2 z-50 bg-white/40 backdrop-blur-2xl shadow-2xl flex flex-col"
+          class="md:hidden fixed top-0 right-0 max-h-screen overflow-y-auto w-1/2 z-50 bg-white/40 backdrop-blur-2xl shadow-2xl flex flex-col"
           @click.stop
         >
           <!-- 个人名片区 -->
@@ -184,11 +184,11 @@ const menuItems = [
               />
             </div>
             <!-- 博客名 -->
-            <RouterLink to="/" class="text-lg font-bold text-gray-800" @click="menuOpen = false">
+            <RouterLink to="/" class="text-lg font-bold" style="background: linear-gradient(135deg, #ffffff 0%, #f8c8d8 40%, #e898b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;" @click="menuOpen = false">
               Suyuxi
             </RouterLink>
             <!-- 标语 -->
-            <p class="text-sm text-gray-400 mt-1.5 leading-relaxed">{{ siteDesc }}</p>
+            <p class="text-sm text-gray-500 mt-1.5 leading-relaxed font-semibold">{{ siteDesc }}</p>
           </div>
           <!-- 菜单项 -->
           <div class="flex-1 flex flex-col items-center px-4 pt-6 space-y-3">

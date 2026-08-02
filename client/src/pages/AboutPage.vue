@@ -14,7 +14,7 @@ onMounted(async () => {
   try {
     const res = await fetchSettings();
     aboutContent.value = res.data.about_me || "暂无介绍";
-    github.value = res.data.github || "";
+    github.value = res.data.github || "https://github.com/Aurora44s/AI-agent";
     siteName.value = res.data.site_name || "遇梦";
   } catch {
     console.error("加载关于页面失败");

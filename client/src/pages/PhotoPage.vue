@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from "vue";
 import { fetchPhotos, type Photo } from "@/api";
 
+
 const photos = ref<Photo[]>([]);
 const loading = ref(true);
 const openedAlbum = ref<string | null>(null);
@@ -55,8 +56,7 @@ onMounted(async () => {
   <div class="absolute inset-0 bg-white/10 backdrop-blur-xl"></div>
 
   <div class="relative z-10 max-w-5xl mx-auto px-4 pt-20 md:pt-24 pb-12">
-    <h1 class="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-2">📸 照片墙</h1>
-    <p class="text-gray-400 text-center text-sm mb-10">每一张照片，都是一段故事</p>
+    <p class="text-gray-700 text-center text-lg mb-10">每一张照片，都是一段故事</p>
 
     <!-- 加载中 -->
     <div v-if="loading" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
@@ -71,7 +71,7 @@ onMounted(async () => {
 
     <!-- 空状态 -->
     <div v-else-if="albums.length === 0" class="text-center py-20">
-      <div class="text-5xl mb-4">📸</div>
+      <CameraIcon class="w-12 h-12 text-gray-300 mx-auto mb-4" />
       <p class="text-gray-400">还没有照片，去后台添加吧</p>
     </div>
 
