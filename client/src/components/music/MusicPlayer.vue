@@ -62,6 +62,7 @@ onMounted(loadSongs);
 onUnmounted(() => {
   document.removeEventListener("click", tryAutoplay);
   document.removeEventListener("click", onDocumentClick);
+  stopProgressPolling();
 });
 
 // 半圆位置（三段式动画）
@@ -141,6 +142,7 @@ async function play() {
   try {
     await audioEl.value.play();
     isPlaying.value = true;
+    startProgressPolling();
   } catch {
     // 浏览器自动播放策略可能阻止，不强制设为 true
   }
@@ -149,6 +151,7 @@ function pause() {
   userPaused = true;
   audioEl.value?.pause();
   isPlaying.value = false;
+  stopProgressPolling();
 }
 function togglePlay() {
   isPlaying.value ? pause() : play();
@@ -170,9 +173,28 @@ function selectSong(idx: number) {
 }
 
 // ----- 进度条 -----
+let progressTimer: ReturnType<typeof setInterval> | null = null;
+
+function startProgressPolling() {
+  stopProgressPolling();
+  progressTimer = setInterval(() => {
+    if (!audioEl.value || !isPlaying.value) return;
+    currentTime.value = audioEl.value.currentTime;
+    updateLyricIdx();
+  }, 200);
+}
+
+function stopProgressPolling() {
+  if (progressTimer) { clearInterval(progressTimer); progressTimer = null; }
+}
+
 function onTimeUpdate() {
   if (!audioEl.value) return;
   currentTime.value = audioEl.value.currentTime;
+  updateLyricIdx();
+}
+
+function updateLyricIdx() {
   const t = currentTime.value;
   let idx = -1;
   for (let i = 0; i < lyrics.value.length; i++) {
@@ -218,7 +240,7 @@ watch(currentLyricIdx, async (idx) => {
 function onLoaded() {
   if (audioEl.value) duration.value = audioEl.value.duration;
 }
-function onEnded() { next(); }
+function onEnded() { stopProgressPolling(); next(); }
 function seek(e: MouseEvent) {
   const el = e.currentTarget as HTMLElement;
   const pct = (e.clientX - el.getBoundingClientRect().left) / el.offsetWidth;
