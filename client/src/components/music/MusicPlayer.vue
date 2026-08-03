@@ -62,7 +62,7 @@ onMounted(loadSongs);
 onUnmounted(() => {
   document.removeEventListener("click", tryAutoplay);
   document.removeEventListener("click", onDocumentClick);
-  stopProgressPolling();
+  onPlayPause();
 });
 
 // 半圆位置（三段式动画）
@@ -142,16 +142,14 @@ async function play() {
   try {
     await audioEl.value.play();
     isPlaying.value = true;
-    startProgressPolling();
   } catch {
-    // 浏览器自动播放策略可能阻止，不强制设为 true
+    // 移动端可能拒绝 Promise，但 @play 事件仍会触发
   }
 }
 function pause() {
   userPaused = true;
   audioEl.value?.pause();
   isPlaying.value = false;
-  stopProgressPolling();
 }
 function togglePlay() {
   isPlaying.value ? pause() : play();
@@ -174,8 +172,22 @@ function selectSong(idx: number) {
 
 // ----- 进度条（rAF 方式，移动端兼容）-----
 let progressAnimId: number | null = null;
-let lastTick = 0;        // 上次 timeupdate 的时间戳
-let lastTickTime = 0;    // 上次 timeupdate 的 currentTime 值
+let lastTick = 0;
+let lastTickTime = 0;
+
+function onPlayStart() {
+  // 初始化时间戳，避免从 0 开始跳跃
+  if (audioEl.value) {
+    lastTick = performance.now();
+    lastTickTime = audioEl.value.currentTime;
+    currentTime.value = lastTickTime;
+  }
+  startProgressPolling();
+}
+
+function onPlayPause() {
+  stopProgressPolling();
+}
 
 function startProgressPolling() {
   stopProgressPolling();
@@ -247,7 +259,7 @@ watch(currentLyricIdx, async (idx) => {
 function onLoaded() {
   if (audioEl.value) duration.value = audioEl.value.duration;
 }
-function onEnded() { stopProgressPolling(); next(); }
+function onEnded() { onPlayPause(); next(); }
 function seek(e: MouseEvent) {
   const el = e.currentTarget as HTMLElement;
   const pct = (e.clientX - el.getBoundingClientRect().left) / el.offsetWidth;
@@ -470,8 +482,8 @@ function fmtTime(t: number) {
     @timeupdate="onTimeUpdate"
     @loadedmetadata="onLoaded"
     @ended="onEnded"
-    @play="isPlaying = true"
-    @pause="isPlaying = false"
+    @play="isPlaying = true; onPlayStart()"
+    @pause="isPlaying = false; onPlayPause()"
   ></audio>
 </template>
 
