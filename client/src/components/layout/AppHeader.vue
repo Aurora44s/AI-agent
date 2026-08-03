@@ -163,7 +163,7 @@ const menuItems = [
       <transition name="menu-slide">
         <div
           v-if="menuOpen"
-          class="md:hidden fixed top-0 bottom-0 right-0 w-48 z-50 bg-white/40 backdrop-blur-2xl shadow-2xl flex flex-col overflow-hidden"
+          class="md:hidden fixed top-0 right-0 max-h-screen overflow-y-auto w-1/2 z-50 bg-white/40 backdrop-blur-2xl shadow-2xl"
           @click.stop
         >
           <!-- 个人名片区 -->
@@ -191,7 +191,7 @@ const menuItems = [
             <p class="text-sm text-gray-500 mt-1.5 leading-relaxed font-semibold">{{ siteDesc }}</p>
           </div>
           <!-- 菜单项 -->
-          <div class="flex-1 min-h-0 overflow-y-auto flex flex-col items-center px-4 pt-6 pb-8 space-y-3">
+          <div class="flex-shrink-0 flex flex-col items-center px-4 pt-6 pb-8 space-y-3">
             <RouterLink
               v-for="(item, idx) in menuItems"
               :key="item.label"
