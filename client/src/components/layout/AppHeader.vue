@@ -63,7 +63,6 @@ onMounted(async () => {
 // 移动端菜单项
 const menuItems = [
   { label: "首页", to: "/", icon: HomeIcon },
-  { label: "文章", to: "/", icon: BookOpenIcon },
   { label: "说说", to: "/moments", icon: BookOpenIcon },
   { label: "留言", to: "/guestbook", icon: BookOpenIcon },
   { label: "照片", to: "/photos", icon: CameraIcon },
