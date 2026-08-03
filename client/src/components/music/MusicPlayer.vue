@@ -172,26 +172,33 @@ function selectSong(idx: number) {
   syncLyrics();
 }
 
-// ----- 进度条 -----
-let progressTimer: ReturnType<typeof setInterval> | null = null;
+// ----- 进度条（rAF 方式，移动端兼容）-----
+let progressAnimId: number | null = null;
+let lastTick = 0;        // 上次 timeupdate 的时间戳
+let lastTickTime = 0;    // 上次 timeupdate 的 currentTime 值
 
 function startProgressPolling() {
   stopProgressPolling();
-  progressTimer = setInterval(() => {
-    if (!audioEl.value || !isPlaying.value) return;
-    currentTime.value = audioEl.value.currentTime;
-    updateLyricIdx();
-  }, 200);
+  function tick() {
+    if (!audioEl.value) { stopProgressPolling(); return; }
+    if (isPlaying.value) {
+      const elapsed = (performance.now() - lastTick) / 1000;
+      currentTime.value = Math.min(lastTickTime + elapsed, duration.value || Infinity);
+      updateLyricIdx();
+    }
+    progressAnimId = requestAnimationFrame(tick);
+  }
+  progressAnimId = requestAnimationFrame(tick);
 }
 
 function stopProgressPolling() {
-  if (progressTimer) { clearInterval(progressTimer); progressTimer = null; }
+  if (progressAnimId) { cancelAnimationFrame(progressAnimId); progressAnimId = null; }
 }
 
 function onTimeUpdate() {
   if (!audioEl.value) return;
-  currentTime.value = audioEl.value.currentTime;
-  updateLyricIdx();
+  lastTick = performance.now();
+  lastTickTime = audioEl.value.currentTime;
 }
 
 function updateLyricIdx() {
