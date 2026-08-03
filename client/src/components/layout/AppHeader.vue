@@ -163,7 +163,7 @@ const menuItems = [
       <transition name="menu-slide">
         <div
           v-if="menuOpen"
-          class="md:hidden fixed top-0 right-0 max-h-screen overflow-y-auto w-64 z-50 bg-white/40 backdrop-blur-2xl shadow-2xl"
+          class="md:hidden fixed top-0 right-0 max-h-screen overflow-y-auto w-48 z-50 bg-white/40 backdrop-blur-2xl shadow-2xl"
           @click.stop
         >
           <!-- 个人名片区 -->

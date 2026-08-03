@@ -142,8 +142,10 @@ async function play() {
   try {
     await audioEl.value.play();
     isPlaying.value = true;
+    onPlayStart();
   } catch {
-    // 移动端可能拒绝 Promise，但 @play 事件仍会触发
+    // 移动端可能拒绝 Promise，尝试启动轮询兜底
+    onPlayStart();
   }
 }
 function pause() {
@@ -172,21 +174,35 @@ function selectSong(idx: number) {
 
 // ----- 进度条（rAF 方式，移动端兼容）-----
 let progressAnimId: number | null = null;
-let lastTick = 0;
-let lastTickTime = 0;
+let durationRetry: ReturnType<typeof setInterval> | null = null;
 
 function onPlayStart() {
-  // 初始化时间戳，避免从 0 开始跳跃
   if (audioEl.value) {
-    lastTick = performance.now();
-    lastTickTime = audioEl.value.currentTime;
-    currentTime.value = lastTickTime;
+    currentTime.value = audioEl.value.currentTime;
+    // 如果 duration 还没加载（移动端 loadedmetadata 可能延迟）
+    if (!duration.value || isNaN(duration.value)) {
+      clearDurationRetry();
+      durationRetry = setInterval(() => {
+        if (audioEl.value) {
+          const d = audioEl.value.duration;
+          if (d && !isNaN(d) && d > 0) {
+            duration.value = d;
+            clearDurationRetry();
+          }
+        }
+      }, 200);
+    }
   }
   startProgressPolling();
 }
 
+function clearDurationRetry() {
+  if (durationRetry) { clearInterval(durationRetry); durationRetry = null; }
+}
+
 function onPlayPause() {
   stopProgressPolling();
+  clearDurationRetry();
 }
 
 function startProgressPolling() {
@@ -194,8 +210,8 @@ function startProgressPolling() {
   function tick() {
     if (!audioEl.value) { stopProgressPolling(); return; }
     if (isPlaying.value) {
-      const elapsed = (performance.now() - lastTick) / 1000;
-      currentTime.value = Math.min(lastTickTime + elapsed, duration.value || Infinity);
+      // 直接读 currentTime，不依赖 timeupdate 事件
+      currentTime.value = audioEl.value.currentTime;
       updateLyricIdx();
     }
     progressAnimId = requestAnimationFrame(tick);
@@ -208,9 +224,7 @@ function stopProgressPolling() {
 }
 
 function onTimeUpdate() {
-  if (!audioEl.value) return;
-  lastTick = performance.now();
-  lastTickTime = audioEl.value.currentTime;
+  // 歌词更新已在 rAF 中处理，这里仅作保留
 }
 
 function updateLyricIdx() {
